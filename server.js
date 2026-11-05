@@ -9,12 +9,21 @@ const PORT = process.env.PORT || 3000;
 
 // ─── Environment Variables ─────────────────────────────────────────────────
 const SUPABASE_URL             = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY        = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
 const SUPABASE_SERVICE_KEY     = process.env.SUPABASE_SERVICE_KEY;
 const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL;
 
 // ─── Middleware ────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '20kb' }));
 app.use(express.static(path.join(__dirname)));
+
+// ─── GET /api/config (Public runtime client configuration) ─────────────────
+app.get('/api/config', (req, res) => {
+  res.json({
+    supabaseUrl: SUPABASE_URL || '',
+    supabaseAnonKey: SUPABASE_ANON_KEY || ''
+  });
+});
 
 // ─── In-Memory Rate Limiter (5 req / 60 s per IP) ─────────────────────────
 const rateLimitMap = new Map();
@@ -250,6 +259,129 @@ async function forwardToGoogleSheet(payload) {
 
   return { ok: true };
 }
+
+// ─── POST /api/register ────────────────────────────────────────────────────
+app.post('/api/register', rateLimiter, async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body || {};
+
+    const cleanName  = cleanString(fullName, 70);
+    const cleanEmail = cleanString(email, 100).toLowerCase();
+
+    if (!cleanName || cleanName.length < 2 || !NAME_REGEX.test(cleanName)) {
+      return res.status(400).json({ success: false, error: 'Full name must be 2–70 characters (letters only).' });
+    }
+    if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
+      return res.status(400).json({ success: false, error: 'Please provide a valid work email.' });
+    }
+    if (!password || password.length < 8) {
+      return res.status(400).json({ success: false, error: 'Password must be at least 8 characters long.' });
+    }
+
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      return res.status(500).json({ success: false, error: 'Supabase is not configured on the server.' });
+    }
+
+    const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/signup`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: cleanEmail,
+        password: password,
+        data: {
+          full_name: cleanName
+        }
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      let friendlyError = result.msg || result.error_description || result.error || 'Registration failed';
+      if (friendlyError.includes('already registered')) {
+        friendlyError = 'An account with this email address already exists. Please sign in instead.';
+      } else if (friendlyError.includes('email_address_invalid') || friendlyError.includes('invalid')) {
+        friendlyError = 'Please use a valid corporate or recognized email address (e.g. name@company.com or name@gmail.com).';
+      }
+      return res.status(response.status).json({ success: false, error: friendlyError });
+    }
+
+    const requiresEmailConfirmation = !result.session && !!result.id;
+
+    return res.status(200).json({
+      success: true,
+      requiresEmailConfirmation,
+      user: {
+        id: result.id,
+        email: result.email,
+        fullName: cleanName
+      }
+    });
+
+  } catch (err) {
+    console.error('[/api/register] Unexpected error:', err);
+    return res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
+
+// ─── POST /api/login ───────────────────────────────────────────────────────
+app.post('/api/login', rateLimiter, async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+
+    const cleanEmail = cleanString(email, 100).toLowerCase();
+
+    if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
+      return res.status(400).json({ success: false, error: 'Please enter a valid work email.' });
+    }
+    if (!password) {
+      return res.status(400).json({ success: false, error: 'Password is required.' });
+    }
+
+    const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/token?grant_type=password`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: cleanEmail,
+        password: password
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      let msg = result.error_description || result.msg || 'Authentication failed';
+      if (msg.includes('Invalid login credentials')) {
+        msg = 'Invalid work email or password. Please verify your credentials.';
+      } else if (msg.includes('Email not confirmed')) {
+        msg = 'Your email address has not been confirmed yet. Please verify your inbox.';
+      }
+      return res.status(response.status).json({ success: false, error: msg });
+    }
+
+    return res.status(200).json({
+      success: true,
+      session: {
+        accessToken: result.access_token,
+        refreshToken: result.refresh_token,
+        expiresIn: result.expires_in
+      },
+      user: result.user
+    });
+
+  } catch (err) {
+    console.error('[/api/login] Unexpected error:', err);
+    return res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
 
 // ─── SPA fallback: catch-all → index.html ─────────────────────────────────
 app.get('/{*splat}', (req, res) => {

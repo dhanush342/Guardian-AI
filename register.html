@@ -1,26 +1,45 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Transparentlogo.png">
+  <link rel="shortcut icon" type="image/png" href="Transparentlogo.png">
+  <link rel="apple-touch-icon" href="Transparentlogo.png">
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Create Account — Guardian AI Enterprise Platform</title>
-  <meta content="Register for Guardian AI autonomous AI safety orchestration, continuous policy verification, and threat telemetry." name="description">
-  
+  <meta
+    content="Register for Guardian AI autonomous AI safety orchestration, continuous policy verification, and threat telemetry."
+    name="description">
+
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Cormorant+Garamond:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Cormorant+Garamond:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     @layer base {
-      html, body {
+
+      html,
+      body {
         margin: 0;
         padding: 0;
         background-color: #F0F5FC;
         color: #1E2A38;
       }
     }
-    ::-webkit-scrollbar { display: none; }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
     .hero-gradient-text {
       background: linear-gradient(135deg, #1A3A5C 0%, #2E6DB4 50%, #4A9FE0 100%);
       -webkit-background-clip: text;
@@ -57,19 +76,23 @@
     };
   </script>
 </head>
-<body class="bg-mist font-sans text-charcoal antialiased selection:bg-[#EBF3FB] selection:text-authority-blue min-h-screen flex flex-col justify-between">
+
+<body
+  class="bg-mist font-sans text-charcoal antialiased selection:bg-[#EBF3FB] selection:text-authority-blue min-h-screen flex flex-col justify-between">
 
   <!-- Top Navigation Header -->
   <header class="w-full bg-white/95 backdrop-blur-md border-b border-border-light shadow-xs py-4 px-4 sm:px-8">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <a aria-label="Guardian AI Home" class="flex items-center gap-3 group" href="index.html">
-        <img alt="Guardian AI Logo" class="h-12 sm:h-14 w-auto object-contain mix-blend-multiply transition-transform hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXBL3_NsJD1lkHjylyKFmCwC8vwkIJv6M3wdgtvR_BmzFi0SeoATLuoH8BPOptRxh5Iwj9vsgRKMKmQl6wvpYT9dUYQAIi5xqLW0bIXjUm3eksdPpML57EjWiDEzhAGb6zcSM-jCQkuXS4k8mmf2N93sQJ86hBsCC1mZlRcRVX9NBxbJcjilKOjfzAsRnfghTHy5crWW-78GDCz_GnuGZkaxxmsKGeZjjYrM0HjY96T0ObrxwL8je3yyo_GgQNMXrpew" onerror="this.onerror=null; this.src='guardianlogo.jpeg';">
-        <span class="font-serif text-2xl font-bold text-authority-blue tracking-tight hidden sm:inline">Guardian<span class="text-signal-blue">AI</span></span>
+        <img alt="Guardian AI Logo" class="h-12 sm:h-14 w-auto object-contain transition-transform hover:scale-105"
+          src="Transparentlogo.png" onerror="this.onerror=null; this.src='guardianlogo.jpeg';">
+        <!-- <span class="font-serif text-2xl font-bold text-authority-blue tracking-tight hidden sm:inline">Guardian<span class="text-signal-blue">AI</span></span> -->
       </a>
 
       <div class="flex items-center gap-3 sm:gap-5 text-sm">
         <span class="text-slate-subtle hidden md:inline">Already have an account?</span>
-        <a class="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-border-light text-authority-blue font-semibold hover:bg-frost transition-all shadow-xs" href="login.html">
+        <a class="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-border-light text-authority-blue font-semibold hover:bg-frost transition-all shadow-xs"
+          href="login.html">
           Sign In
         </a>
       </div>
@@ -79,14 +102,20 @@
   <!-- Main Content Registration Container -->
   <main class="flex-1 flex items-center justify-center px-4 py-12 relative overflow-hidden">
     <!-- Ambient Optical Glows matching homepage -->
-    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[400px] bg-gradient-to-tr from-slate-200/50 via-slate-100/30 to-transparent blur-[120px] pointer-events-none rounded-full"></div>
-    <div class="absolute -bottom-20 -right-20 w-[360px] h-[360px] bg-slate-200/40 blur-[100px] pointer-events-none rounded-full"></div>
+    <div
+      class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[400px] bg-gradient-to-tr from-slate-200/50 via-slate-100/30 to-transparent blur-[120px] pointer-events-none rounded-full">
+    </div>
+    <div
+      class="absolute -bottom-20 -right-20 w-[360px] h-[360px] bg-slate-200/40 blur-[100px] pointer-events-none rounded-full">
+    </div>
 
-    <div class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl border border-border-light shadow-2xl shadow-signal-blue/10 p-6 sm:p-10 relative z-10">
-      
+    <div
+      class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl border border-border-light shadow-2xl shadow-signal-blue/10 p-6 sm:p-10 relative z-10">
+
       <!-- Card Badge -->
       <div class="flex items-center justify-between mb-4">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-border-light text-xs font-mono text-authority-blue font-semibold uppercase tracking-wider">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-border-light text-xs font-mono text-authority-blue font-semibold uppercase tracking-wider">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           Secure Enterprise Onboarding
         </div>
@@ -102,22 +131,27 @@
       </p>
 
       <!-- Global Error Alert Banner -->
-      <div class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 mb-5" id="reg-global-alert">
+      <div
+        class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 mb-5"
+        id="reg-global-alert">
         <span class="material-symbols-outlined text-base text-rose-600 shrink-0">warning</span>
         <span id="reg-global-alert-text">Please review and correct the highlighted fields below.</span>
       </div>
 
       <!-- Registration Form -->
       <form class="space-y-4" id="register-form" novalidate onsubmit="handleRegisterSubmit(event)">
-        
+
         <!-- Field 1: Full Name -->
         <div>
           <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="reg-name">
             Full Name <span class="text-signal-blue">*</span>
           </label>
           <div class="relative">
-            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">person</span>
-            <input autocomplete="name" class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all" id="reg-name" maxlength="70" name="name" placeholder="Alex Morgan" required type="text">
+            <span
+              class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">person</span>
+            <input autocomplete="name"
+              class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all"
+              id="reg-name" maxlength="70" name="name" placeholder="Alex Morgan" required type="text">
           </div>
           <p class="hidden text-xs text-rose-600 mt-1.5 items-center gap-1 font-medium" id="reg-name-error">
             <span class="material-symbols-outlined text-sm">error</span>
@@ -127,12 +161,16 @@
 
         <!-- Field 2: Work Email -->
         <div>
-          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="reg-email">
+          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5"
+            for="reg-email">
             Work Email Address <span class="text-signal-blue">*</span>
           </label>
           <div class="relative">
-            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">mail</span>
-            <input autocomplete="email" class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all" id="reg-email" maxlength="100" name="email" placeholder="alex@company.com" required type="email">
+            <span
+              class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">mail</span>
+            <input autocomplete="email"
+              class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all"
+              id="reg-email" maxlength="100" name="email" placeholder="alex@company.com" required type="email">
           </div>
           <p class="hidden text-xs text-rose-600 mt-1.5 items-center gap-1 font-medium" id="reg-email-error">
             <span class="material-symbols-outlined text-sm">error</span>
@@ -142,13 +180,19 @@
 
         <!-- Field 3: Password with Eye Toggle -->
         <div>
-          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="reg-password">
+          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5"
+            for="reg-password">
             Password <span class="text-signal-blue">*</span>
           </label>
           <div class="relative">
-            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">lock</span>
-            <input autocomplete="new-password" class="w-full pl-11 pr-11 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all font-mono" id="reg-password" maxlength="128" name="password" placeholder="••••••••••••" required type="password">
-            <button aria-label="Toggle password visibility" class="absolute right-3 top-2.5 text-slate-subtle hover:text-authority-blue p-0.5 rounded-lg transition-colors cursor-pointer" onclick="togglePasswordVisibility('reg-password', 'reg-password-eye-icon')" type="button">
+            <span
+              class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">lock</span>
+            <input autocomplete="new-password"
+              class="w-full pl-11 pr-11 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all font-mono"
+              id="reg-password" maxlength="128" name="password" placeholder="••••••••••••" required type="password">
+            <button aria-label="Toggle password visibility"
+              class="absolute right-3 top-2.5 text-slate-subtle hover:text-authority-blue p-0.5 rounded-lg transition-colors cursor-pointer"
+              onclick="togglePasswordVisibility('reg-password', 'reg-password-eye-icon')" type="button">
               <span class="material-symbols-outlined text-xl" id="reg-password-eye-icon">visibility</span>
             </button>
           </div>
@@ -164,7 +208,8 @@
               <span class="font-bold text-slate-subtle uppercase" id="password-strength-label">Too Short</span>
             </div>
             <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-              <div class="h-full rounded-full transition-all duration-300 w-0 bg-rose-500" id="password-strength-bar"></div>
+              <div class="h-full rounded-full transition-all duration-300 w-0 bg-rose-500" id="password-strength-bar">
+              </div>
             </div>
             <!-- Requirements checklist -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-[11px] text-slate-subtle">
@@ -190,13 +235,20 @@
 
         <!-- Field 4: Confirm Password with Eye Toggle -->
         <div>
-          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="reg-confirm-password">
+          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5"
+            for="reg-confirm-password">
             Confirm Password <span class="text-signal-blue">*</span>
           </label>
           <div class="relative">
-            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">lock_reset</span>
-            <input autocomplete="new-password" class="w-full pl-11 pr-11 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all font-mono" id="reg-confirm-password" maxlength="128" name="confirmPassword" placeholder="••••••••••••" required type="password">
-            <button aria-label="Toggle confirm password visibility" class="absolute right-3 top-2.5 text-slate-subtle hover:text-authority-blue p-0.5 rounded-lg transition-colors cursor-pointer" onclick="togglePasswordVisibility('reg-confirm-password', 'reg-confirm-eye-icon')" type="button">
+            <span
+              class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">lock_reset</span>
+            <input autocomplete="new-password"
+              class="w-full pl-11 pr-11 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all font-mono"
+              id="reg-confirm-password" maxlength="128" name="confirmPassword" placeholder="••••••••••••" required
+              type="password">
+            <button aria-label="Toggle confirm password visibility"
+              class="absolute right-3 top-2.5 text-slate-subtle hover:text-authority-blue p-0.5 rounded-lg transition-colors cursor-pointer"
+              onclick="togglePasswordVisibility('reg-confirm-password', 'reg-confirm-eye-icon')" type="button">
               <span class="material-symbols-outlined text-xl" id="reg-confirm-eye-icon">visibility</span>
             </button>
           </div>
@@ -209,10 +261,13 @@
         <!-- Terms and Policy Checkbox -->
         <div class="pt-1">
           <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-subtle select-none">
-            <input class="mt-0.5 w-4 h-4 rounded border-border-light text-signal-blue focus:ring-signal-blue" id="reg-terms" required type="checkbox">
+            <input class="mt-0.5 w-4 h-4 rounded border-border-light text-signal-blue focus:ring-signal-blue"
+              id="reg-terms" required type="checkbox">
             <span>
-              I agree to the Guardian AI <a class="text-signal-blue hover:underline font-semibold" href="#">Terms of Service</a>, 
-              <a class="text-signal-blue hover:underline font-semibold" href="#">Enterprise Privacy Policy</a>, and telemetry safeguards.
+              I agree to the Guardian AI <a class="text-signal-blue hover:underline font-semibold" href="#">Terms of
+                Service</a>,
+              <a class="text-signal-blue hover:underline font-semibold" href="#">Enterprise Privacy Policy</a>, and
+              telemetry safeguards.
             </span>
           </label>
           <p class="hidden text-xs text-rose-600 mt-1 items-center gap-1 font-medium" id="reg-terms-error">
@@ -223,7 +278,9 @@
 
         <!-- Submit Button -->
         <div class="pt-3">
-          <button class="w-full py-3.5 px-6 rounded-xl bg-signal-blue hover:bg-authority-blue text-white font-sans text-sm font-bold transition-all shadow-lg shadow-signal-blue/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60" id="reg-submit-btn" type="submit">
+          <button
+            class="w-full py-3.5 px-6 rounded-xl bg-signal-blue hover:bg-authority-blue text-white font-sans text-sm font-bold transition-all shadow-lg shadow-signal-blue/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+            id="reg-submit-btn" type="submit">
             <span id="reg-submit-btn-text">Create Guardian AI Account</span>
             <span class="material-symbols-outlined text-base">arrow_forward</span>
           </button>
@@ -233,23 +290,29 @@
       <!-- Account Switcher -->
       <div class="mt-6 pt-6 border-t border-border-light text-center">
         <p class="text-xs text-slate-subtle">
-          Already registered on the platform? 
-          <a class="text-signal-blue font-semibold hover:text-authority-blue hover:underline transition-colors ml-1" href="login.html">
+          Already registered on the platform?
+          <a class="text-signal-blue font-semibold hover:text-authority-blue hover:underline transition-colors ml-1"
+            href="login.html">
             Sign in to your account
           </a>
         </p>
       </div>
 
       <!-- Success Overlay State -->
-      <div class="hidden absolute inset-0 bg-white/98 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-8 text-center z-20" id="reg-success-overlay">
-        <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 ring-8 ring-emerald-50/50">
+      <div
+        class="hidden absolute inset-0 bg-white/98 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-8 text-center z-20"
+        id="reg-success-overlay">
+        <div
+          class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 ring-8 ring-emerald-50/50">
           <span class="material-symbols-outlined text-4xl">verified_user</span>
         </div>
-        <h3 class="font-serif text-3xl font-bold text-near-black mb-2">Account Created!</h3>
-        <p class="font-sans text-sm text-slate-subtle max-w-sm mb-6 leading-relaxed">
-          Welcome to Guardian AI. Your enterprise identity has been securely registered and sanitized. You can now log into your console.
+        <h3 class="font-serif text-3xl font-bold text-near-black mb-2" id="reg-success-title">Account Created!</h3>
+        <p class="font-sans text-sm text-slate-subtle max-w-sm mb-6 leading-relaxed" id="reg-success-desc">
+          Welcome to Guardian AI. Your enterprise identity has been securely registered and sanitized. You can now log
+          into your console.
         </p>
-        <a class="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-deep-navy hover:bg-authority-blue text-white font-semibold text-sm transition-all shadow-md active:scale-95" href="login.html">
+        <a class="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-deep-navy hover:bg-authority-blue text-white font-semibold text-sm transition-all shadow-md active:scale-95"
+          href="login.html">
           <span>Proceed to Sign In</span>
           <span class="material-symbols-outlined text-base">login</span>
         </a>
@@ -259,7 +322,8 @@
 
   <!-- Footer -->
   <footer class="w-full border-t border-border-light py-6 px-4 bg-white/70 text-xs text-slate-subtle">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+    <div
+      class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-emerald-600 text-sm">lock</span>
         <span>256-bit TLS Enclave Encryption • SOC2 Type II Certified</span>
@@ -570,19 +634,50 @@
       });
     });
 
-    // Storage hook placeholder for Supabase integration in subsequent step
+    // ─── Backend Proxy Registration Hook ─────────────────────────────────────
     window.guardianAuthHooks = {
       register: async (sanitizedUser) => {
-        console.info('[Guardian AI Auth Hook] User ready for Supabase Auth & Database:', sanitizedUser);
-        return { success: true };
+        console.info('[Guardian AI Auth] Processing registration request...');
+
+        try {
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fullName: sanitizedUser.fullName,
+              email: sanitizedUser.email,
+              password: sanitizedUser.password
+            })
+          });
+
+          const result = await response.json();
+          // Registration response processed
+
+          if (!response.ok) {
+            throw new Error(result.error || 'Registration failed.');
+          }
+
+          return result;
+        } catch (err) {
+          console.error('[Guardian AI Auth] ❌ Network/Server error:', err);
+          throw err;
+        }
       }
     };
 
     /**
      * Submit Handler
      */
+    let isRegisterSubmitting = false;
+
     async function handleRegisterSubmit(e) {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
+
+      if (isRegisterSubmitting) {
+        console.warn('[Guardian AI] Registration in progress. Ignoring duplicate trigger.');
+        return;
+      }
+      isRegisterSubmitting = true;
 
       const nameVal = Validator.validateName(document.getElementById('reg-name').value);
       const emailVal = Validator.validateEmail(document.getElementById('reg-email').value);
@@ -607,7 +702,21 @@
       const alertEl = document.getElementById('reg-global-alert');
 
       if (!allValid) {
-        if (alertEl) alertEl.classList.remove('hidden');
+        isRegisterSubmitting = false;
+        const invalidFields = [];
+        if (!nameVal.valid) invalidFields.push('Full Name: ' + nameVal.message);
+        if (!emailVal.valid) invalidFields.push('Email: ' + emailVal.message);
+        if (!passVal.valid) invalidFields.push('Password: ' + passVal.message);
+        if (!confirmVal.valid) invalidFields.push('Confirm Password: ' + confirmVal.message);
+        if (!termsChecked) invalidFields.push('Please accept the Terms of Service & Privacy Policy.');
+
+        // Validation failed - UI updated
+
+        if (alertEl) {
+          const alertText = document.getElementById('reg-global-alert-text');
+          if (alertText) alertText.textContent = invalidFields[0];
+          alertEl.classList.remove('hidden');
+        }
         const firstInvalid = document.querySelector('#register-form [aria-invalid="true"]');
         if (firstInvalid) firstInvalid.focus();
         return;
@@ -634,8 +743,8 @@
       };
 
       // Store in global window state and dispatch custom event
-      window.lastRegistrationPayload = sanitizedRegistration;
-      window.dispatchEvent(new CustomEvent('guardianUserRegistered', { detail: sanitizedRegistration }));
+      // Registration payload not stored in global state
+      // Event dispatched without raw credentials
 
       const submitBtn = document.getElementById('reg-submit-btn');
       const submitText = document.getElementById('reg-submit-btn-text');
@@ -643,26 +752,49 @@
       submitText.textContent = 'Creating Secure Enclave...';
 
       try {
+        let authResult = { success: true };
         if (window.guardianAuthHooks && window.guardianAuthHooks.register) {
-          await window.guardianAuthHooks.register(sanitizedRegistration);
+          authResult = await window.guardianAuthHooks.register(sanitizedRegistration);
         }
 
         setTimeout(() => {
+          isRegisterSubmitting = false;
           submitBtn.disabled = false;
           submitText.textContent = 'Create Guardian AI Account';
+
+          const titleEl = document.getElementById('reg-success-title');
+          const descEl = document.getElementById('reg-success-desc');
+
+          if (authResult.requiresEmailConfirmation) {
+            if (titleEl) titleEl.textContent = 'Confirm Your Email';
+            if (descEl) {
+              descEl.innerHTML = 'A verification link has been dispatched to <strong class="text-authority-blue">' + escapeHtml(sanitizedRegistration.email) + '</strong>. Please verify your address to access your security console.';
+            }
+          } else {
+            if (titleEl) titleEl.textContent = 'Enclave Created!';
+            if (descEl) {
+              descEl.textContent = 'Your enterprise identity has been securely created. Redirecting to sign in...';
+            }
+            setTimeout(() => {
+              window.location.href = 'login.html';
+            }, 2500);
+          }
+
           document.getElementById('reg-success-overlay').classList.remove('hidden');
-        }, 750);
+        }, 600);
       } catch (err) {
-        console.error('Registration pipeline error:', err);
+        isRegisterSubmitting = false;
+        console.error('[Guardian AI] Registration pipeline error:', err);
         submitBtn.disabled = false;
         submitText.textContent = 'Create Guardian AI Account';
         if (alertEl) {
-          document.getElementById('reg-global-alert-text').textContent = 'Unable to complete registration. Please try again.';
+          const alertTextEl = document.getElementById('reg-global-alert-text');
+          if (alertTextEl) alertTextEl.textContent = err.message || 'Unable to complete registration. Please try again.';
           alertEl.classList.remove('hidden');
         }
       }
     }
   </script>
 </body>
-</html>
 
+</html>

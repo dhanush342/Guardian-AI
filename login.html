@@ -1,26 +1,45 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Transparentlogo.png">
+  <link rel="shortcut icon" type="image/png" href="Transparentlogo.png">
+  <link rel="apple-touch-icon" href="Transparentlogo.png">
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Sign In — Guardian AI Enterprise Platform</title>
-  <meta content="Sign in to your Guardian AI account to access live threat telemetry, AI policy orchestration, and security telemetry." name="description">
-  
+  <meta
+    content="Sign in to your Guardian AI account to access live threat telemetry, AI policy orchestration, and security telemetry."
+    name="description">
+
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Cormorant+Garamond:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Cormorant+Garamond:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     @layer base {
-      html, body {
+
+      html,
+      body {
         margin: 0;
         padding: 0;
         background-color: #F0F5FC;
         color: #1E2A38;
       }
     }
-    ::-webkit-scrollbar { display: none; }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
     .hero-gradient-text {
       background: linear-gradient(135deg, #1A3A5C 0%, #2E6DB4 50%, #4A9FE0 100%);
       -webkit-background-clip: text;
@@ -57,19 +76,23 @@
     };
   </script>
 </head>
-<body class="bg-mist font-sans text-charcoal antialiased selection:bg-[#EBF3FB] selection:text-authority-blue min-h-screen flex flex-col justify-between">
+
+<body
+  class="bg-mist font-sans text-charcoal antialiased selection:bg-[#EBF3FB] selection:text-authority-blue min-h-screen flex flex-col justify-between">
 
   <!-- Top Navigation Header -->
   <header class="w-full bg-white/95 backdrop-blur-md border-b border-border-light shadow-xs py-4 px-4 sm:px-8">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <a aria-label="Guardian AI Home" class="flex items-center gap-3 group" href="index.html">
-        <img alt="Guardian AI Logo" class="h-12 sm:h-14 w-auto object-contain mix-blend-multiply transition-transform hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXBL3_NsJD1lkHjylyKFmCwC8vwkIJv6M3wdgtvR_BmzFi0SeoATLuoH8BPOptRxh5Iwj9vsgRKMKmQl6wvpYT9dUYQAIi5xqLW0bIXjUm3eksdPpML57EjWiDEzhAGb6zcSM-jCQkuXS4k8mmf2N93sQJ86hBsCC1mZlRcRVX9NBxbJcjilKOjfzAsRnfghTHy5crWW-78GDCz_GnuGZkaxxmsKGeZjjYrM0HjY96T0ObrxwL8je3yyo_GgQNMXrpew" onerror="this.onerror=null; this.src='guardianlogo.jpeg';">
-        <span class="font-serif text-2xl font-bold text-authority-blue tracking-tight hidden sm:inline">Guardian<span class="text-signal-blue">AI</span></span>
+        <img alt="Guardian AI Logo" class="h-12 sm:h-14 w-auto object-contain transition-transform hover:scale-105"
+          src="Transparentlogo.png" onerror="this.onerror=null; this.src='guardianlogo.jpeg';">
+        <!-- <span class="font-serif text-2xl font-bold text-authority-blue tracking-tight hidden sm:inline">Guardian<span class="text-signal-blue">AI</span></span> -->
       </a>
 
       <div class="flex items-center gap-3 sm:gap-5 text-sm">
         <span class="text-slate-subtle hidden md:inline">Need an enterprise account?</span>
-        <a class="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-signal-blue hover:bg-authority-blue text-white font-semibold transition-all shadow-md shadow-signal-blue/20" href="register.html">
+        <a class="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-signal-blue hover:bg-authority-blue text-white font-semibold transition-all shadow-md shadow-signal-blue/20"
+          href="register.html">
           Register
         </a>
       </div>
@@ -79,14 +102,20 @@
   <!-- Main Content Login Container -->
   <main class="flex-1 flex items-center justify-center px-4 py-12 relative overflow-hidden">
     <!-- Ambient Optical Glows -->
-    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[400px] bg-gradient-to-tr from-slate-200/50 via-slate-100/30 to-transparent blur-[120px] pointer-events-none rounded-full"></div>
-    <div class="absolute -bottom-20 -left-20 w-[360px] h-[360px] bg-slate-200/40 blur-[100px] pointer-events-none rounded-full"></div>
+    <div
+      class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[400px] bg-gradient-to-tr from-slate-200/50 via-slate-100/30 to-transparent blur-[120px] pointer-events-none rounded-full">
+    </div>
+    <div
+      class="absolute -bottom-20 -left-20 w-[360px] h-[360px] bg-slate-200/40 blur-[100px] pointer-events-none rounded-full">
+    </div>
 
-    <div class="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl border border-border-light shadow-2xl shadow-signal-blue/10 p-6 sm:p-10 relative z-10">
-      
+    <div
+      class="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl border border-border-light shadow-2xl shadow-signal-blue/10 p-6 sm:p-10 relative z-10">
+
       <!-- Card Badge -->
       <div class="flex items-center justify-between mb-4">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-border-light text-xs font-mono text-authority-blue font-semibold uppercase tracking-wider">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-border-light text-xs font-mono text-authority-blue font-semibold uppercase tracking-wider">
           <span class="w-2 h-2 rounded-full bg-signal-blue animate-pulse"></span>
           Enterprise Identity Authentication
         </div>
@@ -102,22 +131,28 @@
       </p>
 
       <!-- Global Alert Banner -->
-      <div class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 mb-5" id="login-global-alert">
+      <div
+        class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 mb-5"
+        id="login-global-alert">
         <span class="material-symbols-outlined text-base text-rose-600 shrink-0">warning</span>
         <span id="login-global-alert-text">Invalid login credentials. Please check and retry.</span>
       </div>
 
       <!-- Login Form -->
       <form class="space-y-4" id="login-form" novalidate onsubmit="handleLoginSubmit(event)">
-        
+
         <!-- Field 1: Work Email -->
         <div>
-          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="login-email">
+          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5"
+            for="login-email">
             Work Email Address <span class="text-signal-blue">*</span>
           </label>
           <div class="relative">
-            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">mail</span>
-            <input autocomplete="email" class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all" id="login-email" maxlength="100" name="email" placeholder="alex@company.com" required type="email">
+            <span
+              class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">mail</span>
+            <input autocomplete="email"
+              class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all"
+              id="login-email" maxlength="100" name="email" placeholder="alex@company.com" required type="email">
           </div>
           <p class="hidden text-xs text-rose-600 mt-1.5 items-center gap-1 font-medium" id="login-email-error">
             <span class="material-symbols-outlined text-sm">error</span>
@@ -128,17 +163,25 @@
         <!-- Field 2: Password with Eye Toggle -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider" for="login-password">
+            <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider"
+              for="login-password">
               Password <span class="text-signal-blue">*</span>
             </label>
-            <button class="text-xs text-signal-blue hover:text-authority-blue hover:underline font-semibold cursor-pointer" onclick="openForgotPasswordModal()" type="button">
+            <button
+              class="text-xs text-signal-blue hover:text-authority-blue hover:underline font-semibold cursor-pointer"
+              onclick="openForgotPasswordModal()" type="button">
               Forgot Password?
             </button>
           </div>
           <div class="relative">
-            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">lock</span>
-            <input autocomplete="current-password" class="w-full pl-11 pr-11 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all font-mono" id="login-password" maxlength="128" name="password" placeholder="••••••••••••" required type="password">
-            <button aria-label="Toggle password visibility" class="absolute right-3 top-2.5 text-slate-subtle hover:text-authority-blue p-0.5 rounded-lg transition-colors cursor-pointer" onclick="togglePasswordVisibility('login-password', 'login-password-eye-icon')" type="button">
+            <span
+              class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">lock</span>
+            <input autocomplete="current-password"
+              class="w-full pl-11 pr-11 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all font-mono"
+              id="login-password" maxlength="128" name="password" placeholder="••••••••••••" required type="password">
+            <button aria-label="Toggle password visibility"
+              class="absolute right-3 top-2.5 text-slate-subtle hover:text-authority-blue p-0.5 rounded-lg transition-colors cursor-pointer"
+              onclick="togglePasswordVisibility('login-password', 'login-password-eye-icon')" type="button">
               <span class="material-symbols-outlined text-xl" id="login-password-eye-icon">visibility</span>
             </button>
           </div>
@@ -151,14 +194,17 @@
         <!-- Remember Me Checkbox -->
         <div class="flex items-center justify-between pt-1">
           <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-subtle select-none">
-            <input class="w-4 h-4 rounded border-border-light text-signal-blue focus:ring-signal-blue" id="login-remember" type="checkbox">
+            <input class="w-4 h-4 rounded border-border-light text-signal-blue focus:ring-signal-blue"
+              id="login-remember" type="checkbox">
             <span>Remember this device for 30 days</span>
           </label>
         </div>
 
         <!-- Submit Button -->
         <div class="pt-3">
-          <button class="w-full py-3.5 px-6 rounded-xl bg-signal-blue hover:bg-authority-blue text-white font-sans text-sm font-bold transition-all shadow-lg shadow-signal-blue/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60" id="login-submit-btn" type="submit">
+          <button
+            class="w-full py-3.5 px-6 rounded-xl bg-signal-blue hover:bg-authority-blue text-white font-sans text-sm font-bold transition-all shadow-lg shadow-signal-blue/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+            id="login-submit-btn" type="submit">
             <span id="login-submit-btn-text">Sign In to Platform</span>
             <span class="material-symbols-outlined text-base">login</span>
           </button>
@@ -168,23 +214,28 @@
       <!-- Account Switcher -->
       <div class="mt-6 pt-6 border-t border-border-light text-center">
         <p class="text-xs text-slate-subtle">
-          New to Guardian AI? 
-          <a class="text-signal-blue font-semibold hover:text-authority-blue hover:underline transition-colors ml-1" href="register.html">
+          New to Guardian AI?
+          <a class="text-signal-blue font-semibold hover:text-authority-blue hover:underline transition-colors ml-1"
+            href="register.html">
             Create an enterprise account
           </a>
         </p>
       </div>
 
       <!-- Success State Overlay -->
-      <div class="hidden absolute inset-0 bg-white/98 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-8 text-center z-20" id="login-success-overlay">
-        <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 ring-8 ring-emerald-50/50">
+      <div
+        class="hidden absolute inset-0 bg-white/98 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-8 text-center z-20"
+        id="login-success-overlay">
+        <div
+          class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 ring-8 ring-emerald-50/50">
           <span class="material-symbols-outlined text-4xl">check_circle</span>
         </div>
         <h3 class="font-serif text-3xl font-bold text-near-black mb-2">Authentication Successful!</h3>
         <p class="font-sans text-sm text-slate-subtle max-w-sm mb-6 leading-relaxed">
           Security enclave verified. Initializing real-time telemetry streaming...
         </p>
-        <a class="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-deep-navy hover:bg-authority-blue text-white font-semibold text-sm transition-all shadow-md active:scale-95" href="index.html">
+        <a class="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-deep-navy hover:bg-authority-blue text-white font-semibold text-sm transition-all shadow-md active:scale-95"
+          href="index.html">
           <span>Return to Dashboard</span>
           <span class="material-symbols-outlined text-base">dashboard</span>
         </a>
@@ -193,9 +244,12 @@
   </main>
 
   <!-- Forgot Password Modal -->
-  <div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-navy/70 backdrop-blur-sm" id="forgot-password-modal">
+  <div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-navy/70 backdrop-blur-sm"
+    id="forgot-password-modal">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-border-light relative">
-      <button aria-label="Close" class="absolute right-4 top-4 text-slate-subtle hover:text-authority-blue p-1 rounded-full cursor-pointer" onclick="closeForgotPasswordModal()" type="button">
+      <button aria-label="Close"
+        class="absolute right-4 top-4 text-slate-subtle hover:text-authority-blue p-1 rounded-full cursor-pointer"
+        onclick="closeForgotPasswordModal()" type="button">
         <span class="material-symbols-outlined text-xl">close</span>
       </button>
       <div class="w-12 h-12 rounded-xl bg-frost flex items-center justify-center text-signal-blue mb-4">
@@ -206,10 +260,16 @@
         Enter your registered work email to receive an enterprise password reset token.
       </p>
       <form onsubmit="handleForgotPasswordSubmit(event)">
-        <input class="w-full px-3.5 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all mb-4" id="forgot-email" placeholder="name@company.com" required type="email">
+        <input
+          class="w-full px-3.5 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all mb-4"
+          id="forgot-email" placeholder="name@company.com" required type="email">
         <div class="flex items-center justify-end gap-3">
-          <button class="px-4 py-2 rounded-xl border border-border-light text-xs font-semibold text-authority-blue hover:bg-frost" onclick="closeForgotPasswordModal()" type="button">Cancel</button>
-          <button class="px-5 py-2 rounded-xl bg-signal-blue hover:bg-authority-blue text-white text-xs font-bold shadow-md shadow-signal-blue/20" type="submit">Send Reset Token</button>
+          <button
+            class="px-4 py-2 rounded-xl border border-border-light text-xs font-semibold text-authority-blue hover:bg-frost"
+            onclick="closeForgotPasswordModal()" type="button">Cancel</button>
+          <button
+            class="px-5 py-2 rounded-xl bg-signal-blue hover:bg-authority-blue text-white text-xs font-bold shadow-md shadow-signal-blue/20"
+            type="submit">Send Reset Token</button>
         </div>
       </form>
     </div>
@@ -217,7 +277,8 @@
 
   <!-- Footer -->
   <footer class="w-full border-t border-border-light py-6 px-4 bg-white/70 text-xs text-slate-subtle">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+    <div
+      class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-emerald-600 text-sm">shield</span>
         <span>Guardian AI Autonomous Safety Shield • Zero Trust Policy Enforced</span>
@@ -370,16 +431,52 @@
       });
     });
 
-    // Supabase auth hook placeholder
+    // ─── Backend Proxy Login Hook ─────────────────────────────────────────────
     window.guardianAuthHooks = {
       login: async (sanitizedCredentials) => {
-        console.info('[Guardian AI Auth Hook] Ready for Supabase signInWithPassword:', sanitizedCredentials);
-        return { success: true };
+        console.info('[Guardian AI Auth] Authenticating request...');
+
+        try {
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: sanitizedCredentials.email,
+              password: sanitizedCredentials.password
+            })
+          });
+
+          const result = await response.json();
+          // Authentication response processed
+
+          if (!response.ok) {
+            throw new Error(result.error || 'Authentication failed.');
+          }
+
+          if (result.session && result.session.accessToken) {
+            // Save token for session restore across pages
+            localStorage.setItem('guardian_access_token', result.session.accessToken);
+            localStorage.setItem('guardian_user', JSON.stringify(result.user));
+          }
+
+          return result;
+        } catch (err) {
+          console.error('[Guardian AI Auth] ❌ Network/Server error:', err);
+          throw err;
+        }
       }
     };
 
+    let isLoginSubmitting = false;
+
     async function handleLoginSubmit(e) {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
+
+      if (isLoginSubmitting) {
+        console.warn('[Guardian AI] Login in progress. Ignoring duplicate trigger.');
+        return;
+      }
+      isLoginSubmitting = true;
 
       const emailVal = Validator.validateEmail(document.getElementById('login-email').value);
       const passVal = Validator.validatePassword(document.getElementById('login-password').value);
@@ -392,7 +489,18 @@
       const alertEl = document.getElementById('login-global-alert');
 
       if (!allValid) {
-        if (alertEl) alertEl.classList.remove('hidden');
+        isLoginSubmitting = false;
+        const invalidFields = [];
+        if (!emailVal.valid) invalidFields.push('Email: ' + emailVal.message);
+        if (!passVal.valid) invalidFields.push('Password: ' + passVal.message);
+
+        // Validation failed - UI updated
+
+        if (alertEl) {
+          const alertText = document.getElementById('login-global-alert-text');
+          if (alertText) alertText.textContent = invalidFields[0];
+          alertEl.classList.remove('hidden');
+        }
         const firstInvalid = document.querySelector('#login-form [aria-invalid="true"]');
         if (firstInvalid) firstInvalid.focus();
         return;
@@ -410,8 +518,8 @@
         attemptedAt: new Date().toISOString()
       };
 
-      window.lastLoginPayload = sanitizedCredentials;
-      window.dispatchEvent(new CustomEvent('guardianUserLoggedIn', { detail: sanitizedCredentials }));
+      // Credentials not stored in global state
+      // Event dispatched without raw credentials
 
       const submitBtn = document.getElementById('login-submit-btn');
       const submitText = document.getElementById('login-submit-btn-text');
@@ -424,16 +532,22 @@
         }
 
         setTimeout(() => {
+          isLoginSubmitting = false;
           submitBtn.disabled = false;
           submitText.textContent = 'Sign In to Platform';
           document.getElementById('login-success-overlay').classList.remove('hidden');
-        }, 750);
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1800);
+        }, 600);
       } catch (err) {
-        console.error('Authentication error:', err);
+        isLoginSubmitting = false;
+        console.error('[Guardian AI] Authentication error:', err);
         submitBtn.disabled = false;
         submitText.textContent = 'Sign In to Platform';
         if (alertEl) {
-          document.getElementById('login-global-alert-text').textContent = 'Authentication failed. Please verify email and password.';
+          const alertTextEl = document.getElementById('login-global-alert-text');
+          if (alertTextEl) alertTextEl.textContent = err.message || 'Authentication failed. Please verify email and password.';
           alertEl.classList.remove('hidden');
         }
       }
@@ -449,18 +563,30 @@
       if (modal) modal.classList.add('hidden');
     }
 
-    function handleForgotPasswordSubmit(e) {
+    async function handleForgotPasswordSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById('forgot-email').value;
-      const cleanEmail = Sanitizer.email(email);
-      if (!Validator.validateEmail(cleanEmail).valid) {
+      const emailInput = document.getElementById('forgot-email');
+      const cleanEmail = Sanitizer.email(emailInput ? emailInput.value : '');
+      const val = Validator.validateEmail(cleanEmail);
+      if (!val.valid) {
         alert('Please enter a valid work email.');
         return;
       }
-      alert('Password reset instructions have been dispatched to ' + cleanEmail);
-      closeForgotPasswordModal();
+
+      try {
+        const client = await getSupabase();
+        const { error } = await client.auth.resetPasswordForEmail(cleanEmail, {
+          redirectTo: window.location.origin + '/login.html'
+        });
+        if (error) throw error;
+        alert('Password reset instructions have been dispatched to ' + cleanEmail);
+        closeForgotPasswordModal();
+      } catch (err) {
+        console.error('[Guardian AI] Password reset error:', err);
+        alert(err.message || 'Failed to dispatch password reset. Please try again.');
+      }
     }
   </script>
 </body>
-</html>
 
+</html>
