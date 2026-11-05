@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Create Account — Guardian AI Enterprise Platform</title>
+  <meta content="Register for Guardian AI autonomous AI safety orchestration, continuous policy verification, and threat telemetry." name="description">
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Cormorant+Garamond:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+  
+  <style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #F0F5FC;
+        color: #1E2A38;
+      }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .hero-gradient-text {
+      background: linear-gradient(135deg, #1A3A5C 0%, #2E6DB4 50%, #4A9FE0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "signal-blue": "#2E6DB4",
+            "authority-blue": "#1A3A5C",
+            "deep-navy": "#0D1F35",
+            "clarity-blue": "#4A9FE0",
+            "intel-cyan": "#4ABAFF",
+            "mist": "#F0F5FC",
+            "frost": "#EBF3FB",
+            "charcoal": "#1E2A38",
+            "near-black": "#0A0F1A",
+            "slate-subtle": "#4A5568",
+            "border-light": "#E2E8F0"
+          },
+          fontFamily: {
+            sans: ['Barlow', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-mist font-sans text-charcoal antialiased selection:bg-[#EBF3FB] selection:text-authority-blue min-h-screen flex flex-col justify-between">
+
+  <!-- Top Navigation Header -->
+  <header class="w-full bg-white/95 backdrop-blur-md border-b border-border-light shadow-xs py-4 px-4 sm:px-8">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a aria-label="Guardian AI Home" class="flex items-center gap-3 group" href="index.html">
+        <img alt="Guardian AI Logo" class="h-12 sm:h-14 w-auto object-contain mix-blend-multiply transition-transform hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXBL3_NsJD1lkHjylyKFmCwC8vwkIJv6M3wdgtvR_BmzFi0SeoATLuoH8BPOptRxh5Iwj9vsgRKMKmQl6wvpYT9dUYQAIi5xqLW0bIXjUm3eksdPpML57EjWiDEzhAGb6zcSM-jCQkuXS4k8mmf2N93sQJ86hBsCC1mZlRcRVX9NBxbJcjilKOjfzAsRnfghTHy5crWW-78GDCz_GnuGZkaxxmsKGeZjjYrM0HjY96T0ObrxwL8je3yyo_GgQNMXrpew" onerror="this.onerror=null; this.src='guardianlogo.jpeg';">
+        <span class="font-serif text-2xl font-bold text-authority-blue tracking-tight hidden sm:inline">Guardian<span class="text-signal-blue">AI</span></span>
+      </a>
+
+      <div class="flex items-center gap-3 sm:gap-5 text-sm">
+        <span class="text-slate-subtle hidden md:inline">Already have an account?</span>
+        <a class="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-border-light text-authority-blue font-semibold hover:bg-frost transition-all shadow-xs" href="login.html">
+          Sign In
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Registration Container -->
+  <main class="flex-1 flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <!-- Ambient Optical Glows matching homepage -->
+    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[400px] bg-gradient-to-tr from-slate-200/50 via-slate-100/30 to-transparent blur-[120px] pointer-events-none rounded-full"></div>
+    <div class="absolute -bottom-20 -right-20 w-[360px] h-[360px] bg-slate-200/40 blur-[100px] pointer-events-none rounded-full"></div>
+
+    <div class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl border border-border-light shadow-2xl shadow-signal-blue/10 p-6 sm:p-10 relative z-10">
+      
+      <!-- Card Badge -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-border-light text-xs font-mono text-authority-blue font-semibold uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Secure Enterprise Onboarding
+        </div>
+        <span class="font-mono text-xs text-slate-subtle">ENCLAVE v4.9</span>
+      </div>
+
+      <!-- Card Title & Subtitle -->
+      <h1 class="font-serif text-3xl sm:text-4xl font-bold text-near-black tracking-tight leading-tight mb-2">
+        Create Your <span class="hero-gradient-text">Guardian AI</span> Account
+      </h1>
+      <p class="font-sans text-sm text-slate-subtle leading-relaxed mb-6">
+        Deploy autonomous AI safety policies, protect your multimodal workloads, and gain real-time prompt telemetry.
+      </p>
+
+      <!-- Global Error Alert Banner -->
+      <div class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 mb-5" id="reg-global-alert">
+        <span class="material-symbols-outlined text-base text-rose-600 shrink-0">warning</span>
+        <span id="reg-global-alert-text">Please review and correct the highlighted fields below.</span>
+      </div>
+
+      <!-- Registration Form -->
+      <form class="space-y-4" id="register-form" novalidate onsubmit="handleRegisterSubmit(event)">
+        
+        <!-- Field 1: Full Name -->
+        <div>
+          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="reg-name">
+            Full Name <span class="text-signal-blue">*</span>
+          </label>
+          <div class="relative">
+            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">person</span>
+            <input autocomplete="name" class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all" id="reg-name" maxlength="70" name="name" placeholder="Alex Morgan" required type="text">
+          </div>
+          <p class="hidden text-xs text-rose-600 mt-1.5 items-center gap-1 font-medium" id="reg-name-error">
+            <span class="material-symbols-outlined text-sm">error</span>
+            <span id="reg-name-error-text">Please enter a valid full name (2–70 characters, letters only).</span>
+          </p>
+        </div>
+
+        <!-- Field 2: Work Email -->
+        <div>
+          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="reg-email">
+            Work Email Address <span class="text-signal-blue">*</span>
+          </label>
+          <div class="relative">
+            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">mail</span>
+            <input autocomplete="email" class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all" id="reg-email" maxlength="100" name="email" placeholder="alex@company.com" required type="email">
+          </div>
+          <p class="hidden text-xs text-rose-600 mt-1.5 items-center gap-1 font-medium" id="reg-email-error">
+            <span class="material-symbols-outlined text-sm">error</span>
+            <span id="reg-email-error-text">Please enter a valid business email address.</span>
+          </p>
+        </div>
+
+        <!-- Field 3: Password with Eye Toggle -->
+        <div>
+          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="reg-password">
+            Password <span class="text-signal-blue">*</span>
+          </label>
+          <div class="relative">
+            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">lock</span>
+            <input autocomplete="new-password" class="w-full pl-11 pr-11 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all font-mono" id="reg-password" maxlength="128" name="password" placeholder="••••••••••••" required type="password">
+            <button aria-label="Toggle password visibility" class="absolute right-3 top-2.5 text-slate-subtle hover:text-authority-blue p-0.5 rounded-lg transition-colors cursor-pointer" onclick="togglePasswordVisibility('reg-password', 'reg-password-eye-icon')" type="button">
+              <span class="material-symbols-outlined text-xl" id="reg-password-eye-icon">visibility</span>
+            </button>
+          </div>
+          <p class="hidden text-xs text-rose-600 mt-1.5 items-center gap-1 font-medium" id="reg-password-error">
+            <span class="material-symbols-outlined text-sm">error</span>
+            <span id="reg-password-error-text">Password does not satisfy security requirements.</span>
+          </p>
+
+          <!-- Dynamic Password Strength Bar -->
+          <div class="mt-2.5 p-3 rounded-xl bg-frost border border-border-light text-xs space-y-2">
+            <div class="flex items-center justify-between font-mono text-[11px]">
+              <span class="text-slate-subtle font-sans">Strength Rating:</span>
+              <span class="font-bold text-slate-subtle uppercase" id="password-strength-label">Too Short</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300 w-0 bg-rose-500" id="password-strength-bar"></div>
+            </div>
+            <!-- Requirements checklist -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-[11px] text-slate-subtle">
+              <div class="flex items-center gap-1.5" id="rule-len">
+                <span class="material-symbols-outlined text-sm text-slate-400">radio_button_unchecked</span>
+                <span>8+ characters</span>
+              </div>
+              <div class="flex items-center gap-1.5" id="rule-upper">
+                <span class="material-symbols-outlined text-sm text-slate-400">radio_button_unchecked</span>
+                <span>1 uppercase letter</span>
+              </div>
+              <div class="flex items-center gap-1.5" id="rule-lower">
+                <span class="material-symbols-outlined text-sm text-slate-400">radio_button_unchecked</span>
+                <span>1 lowercase letter</span>
+              </div>
+              <div class="flex items-center gap-1.5" id="rule-num">
+                <span class="material-symbols-outlined text-sm text-slate-400">radio_button_unchecked</span>
+                <span>1 number &amp; 1 symbol</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field 4: Confirm Password with Eye Toggle -->
+        <div>
+          <label class="block text-xs font-semibold text-authority-blue uppercase tracking-wider mb-1.5" for="reg-confirm-password">
+            Confirm Password <span class="text-signal-blue">*</span>
+          </label>
+          <div class="relative">
+            <span class="material-symbols-outlined text-slate-subtle absolute left-3.5 top-2.5 pointer-events-none text-xl">lock_reset</span>
+            <input autocomplete="new-password" class="w-full pl-11 pr-11 py-2.5 rounded-xl border border-border-light text-sm text-charcoal placeholder-slate-subtle focus:ring-2 focus:ring-signal-blue focus:border-signal-blue outline-none transition-all font-mono" id="reg-confirm-password" maxlength="128" name="confirmPassword" placeholder="••••••••••••" required type="password">
+            <button aria-label="Toggle confirm password visibility" class="absolute right-3 top-2.5 text-slate-subtle hover:text-authority-blue p-0.5 rounded-lg transition-colors cursor-pointer" onclick="togglePasswordVisibility('reg-confirm-password', 'reg-confirm-eye-icon')" type="button">
+              <span class="material-symbols-outlined text-xl" id="reg-confirm-eye-icon">visibility</span>
+            </button>
+          </div>
+          <p class="hidden text-xs text-rose-600 mt-1.5 items-center gap-1 font-medium" id="reg-confirm-password-error">
+            <span class="material-symbols-outlined text-sm">error</span>
+            <span id="reg-confirm-password-error-text">Passwords do not match.</span>
+          </p>
+        </div>
+
+        <!-- Terms and Policy Checkbox -->
+        <div class="pt-1">
+          <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-subtle select-none">
+            <input class="mt-0.5 w-4 h-4 rounded border-border-light text-signal-blue focus:ring-signal-blue" id="reg-terms" required type="checkbox">
+            <span>
+              I agree to the Guardian AI <a class="text-signal-blue hover:underline font-semibold" href="#">Terms of Service</a>, 
+              <a class="text-signal-blue hover:underline font-semibold" href="#">Enterprise Privacy Policy</a>, and telemetry safeguards.
+            </span>
+          </label>
+          <p class="hidden text-xs text-rose-600 mt-1 items-center gap-1 font-medium" id="reg-terms-error">
+            <span class="material-symbols-outlined text-sm">error</span>
+            <span>You must accept the terms to create an account.</span>
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-3">
+          <button class="w-full py-3.5 px-6 rounded-xl bg-signal-blue hover:bg-authority-blue text-white font-sans text-sm font-bold transition-all shadow-lg shadow-signal-blue/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60" id="reg-submit-btn" type="submit">
+            <span id="reg-submit-btn-text">Create Guardian AI Account</span>
+            <span class="material-symbols-outlined text-base">arrow_forward</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Account Switcher -->
+      <div class="mt-6 pt-6 border-t border-border-light text-center">
+        <p class="text-xs text-slate-subtle">
+          Already registered on the platform? 
+          <a class="text-signal-blue font-semibold hover:text-authority-blue hover:underline transition-colors ml-1" href="login.html">
+            Sign in to your account
+          </a>
+        </p>
+      </div>
+
+      <!-- Success Overlay State -->
+      <div class="hidden absolute inset-0 bg-white/98 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-8 text-center z-20" id="reg-success-overlay">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 ring-8 ring-emerald-50/50">
+          <span class="material-symbols-outlined text-4xl">verified_user</span>
+        </div>
+        <h3 class="font-serif text-3xl font-bold text-near-black mb-2">Account Created!</h3>
+        <p class="font-sans text-sm text-slate-subtle max-w-sm mb-6 leading-relaxed">
+          Welcome to Guardian AI. Your enterprise identity has been securely registered and sanitized. You can now log into your console.
+        </p>
+        <a class="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-deep-navy hover:bg-authority-blue text-white font-semibold text-sm transition-all shadow-md active:scale-95" href="login.html">
+          <span>Proceed to Sign In</span>
+          <span class="material-symbols-outlined text-base">login</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-border-light py-6 px-4 bg-white/70 text-xs text-slate-subtle">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-emerald-600 text-sm">lock</span>
+        <span>256-bit TLS Enclave Encryption • SOC2 Type II Certified</span>
+      </div>
+      <div>
+        <span>© 2026 Guardian AI Technologies. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script: Sanitization, Password Strength, and Form Engine -->
+  <script>
+    // =========================================================================
+    // GUARDIAN AI - REGISTRATION SANITIZATION & SECURITY VALIDATION ENGINE
+    // =========================================================================
+
+    /**
+     * Toggles visibility of password input
+     */
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (!input || !icon) return;
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    /**
+     * Strips dangerous invisible control characters & normalizes Unicode (NFKC)
+     */
+    function cleanControlChars(str) {
+      if (typeof str !== 'string') return '';
+      return str
+        .normalize('NFKC')
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    }
+
+    /**
+     * Escapes HTML entities to prevent XSS
+     */
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '/': '&#x2F;'
+      };
+      return str.replace(/[&<>"'/]/g, s => map[s]);
+    }
+
+    /**
+     * Neutralizes Excel/CSV Formula Injection (DDE injection)
+     */
+    function sanitizeForSpreadsheet(str) {
+      if (typeof str !== 'string') return '';
+      const trimmed = str.trim();
+      const dangerousPrefixes = ['=', '+', '-', '@', '\t', '\r', '\n'];
+      if (dangerousPrefixes.some(prefix => trimmed.startsWith(prefix))) {
+        return "'" + str;
+      }
+      return str;
+    }
+
+    /**
+     * Comprehensive Sanitizer
+     */
+    const Sanitizer = {
+      name(value) {
+        if (!value) return '';
+        let cleaned = cleanControlChars(String(value)).trim();
+        cleaned = cleaned.replace(/\s+/g, ' ');
+        return cleaned.slice(0, 70);
+      },
+      email(value) {
+        if (!value) return '';
+        return cleanControlChars(String(value)).trim().toLowerCase().slice(0, 100);
+      },
+      password(value) {
+        if (!value) return '';
+        // Password preserves special characters but strips null bytes and raw invisible control chars
+        return cleanControlChars(String(value)).slice(0, 128);
+      }
+    };
+
+    /**
+     * Validation Rules
+     */
+    const Validator = {
+      nameRegex: /^[\p{L}\s.'-]{2,70}$/u,
+      emailRegex: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/,
+
+      validateName(rawName) {
+        const cleaned = Sanitizer.name(rawName);
+        if (!cleaned || cleaned.length < 2) {
+          return { valid: false, message: 'Full name must be at least 2 characters.' };
+        }
+        if (cleaned.length > 70) {
+          return { valid: false, message: 'Full name cannot exceed 70 characters.' };
+        }
+        if (!this.nameRegex.test(cleaned)) {
+          return { valid: false, message: 'Full name may only contain letters, spaces, hyphens, and periods.' };
+        }
+        return { valid: true, sanitized: cleaned };
+      },
+
+      validateEmail(rawEmail) {
+        const cleaned = Sanitizer.email(rawEmail);
+        if (!cleaned) {
+          return { valid: false, message: 'Work email is required.' };
+        }
+        if (cleaned.length > 100) {
+          return { valid: false, message: 'Email address cannot exceed 100 characters.' };
+        }
+        if (!this.emailRegex.test(cleaned)) {
+          return { valid: false, message: 'Please enter a valid work email address (e.g., alex@company.com).' };
+        }
+        return { valid: true, sanitized: cleaned };
+      },
+
+      validatePassword(rawPassword) {
+        const cleaned = Sanitizer.password(rawPassword);
+        if (!cleaned || cleaned.length < 8) {
+          return { valid: false, message: 'Password must be at least 8 characters long.' };
+        }
+        if (!/[A-Z]/.test(cleaned)) {
+          return { valid: false, message: 'Password must include at least one uppercase letter (A-Z).' };
+        }
+        if (!/[a-z]/.test(cleaned)) {
+          return { valid: false, message: 'Password must include at least one lowercase letter (a-z).' };
+        }
+        if (!/[0-9]/.test(cleaned)) {
+          return { valid: false, message: 'Password must include at least one number (0-9).' };
+        }
+        if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(cleaned)) {
+          return { valid: false, message: 'Password must include at least one special symbol (!@#$%...).' };
+        }
+        return { valid: true, sanitized: cleaned };
+      },
+
+      validateConfirmPassword(rawPassword, rawConfirmPassword) {
+        const pass = Sanitizer.password(rawPassword);
+        const confirm = Sanitizer.password(rawConfirmPassword);
+        if (!confirm) {
+          return { valid: false, message: 'Please confirm your password.' };
+        }
+        if (pass !== confirm) {
+          return { valid: false, message: 'Passwords do not match. Please re-enter.' };
+        }
+        return { valid: true, sanitized: confirm };
+      }
+    };
+
+    /**
+     * UI Feedback Helpers
+     */
+    function setFieldError(fieldId, errorMsg) {
+      const input = document.getElementById(fieldId);
+      const errContainer = document.getElementById(fieldId + '-error');
+      const errText = document.getElementById(fieldId + '-error-text');
+
+      if (input) {
+        input.classList.remove('border-border-light', 'focus:ring-signal-blue', 'focus:border-signal-blue');
+        input.classList.add('border-rose-400', 'bg-rose-50/20', 'text-rose-950', 'focus:ring-rose-400', 'focus:border-rose-400');
+        input.setAttribute('aria-invalid', 'true');
+      }
+
+      if (errContainer) {
+        errContainer.classList.remove('hidden');
+        errContainer.classList.add('flex');
+      }
+      if (errText && errorMsg) {
+        errText.textContent = errorMsg;
+      }
+    }
+
+    function clearFieldError(fieldId) {
+      const input = document.getElementById(fieldId);
+      const errContainer = document.getElementById(fieldId + '-error');
+
+      if (input) {
+        input.classList.remove('border-rose-400', 'bg-rose-50/20', 'text-rose-950', 'focus:ring-rose-400', 'focus:border-rose-400');
+        input.classList.add('border-border-light', 'text-charcoal', 'focus:ring-signal-blue', 'focus:border-signal-blue');
+        input.setAttribute('aria-invalid', 'false');
+      }
+
+      if (errContainer) {
+        errContainer.classList.remove('flex');
+        errContainer.classList.add('hidden');
+      }
+    }
+
+    /**
+     * Dynamic Password Strength Evaluator
+     */
+    function evaluatePasswordStrength(password) {
+      let score = 0;
+      const lenCheck = password.length >= 8;
+      const upperCheck = /[A-Z]/.test(password);
+      const lowerCheck = /[a-z]/.test(password);
+      const numSymbolCheck = /[0-9]/.test(password) && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password);
+
+      updateRuleUI('rule-len', lenCheck);
+      updateRuleUI('rule-upper', upperCheck);
+      updateRuleUI('rule-lower', lowerCheck);
+      updateRuleUI('rule-num', numSymbolCheck);
+
+      if (lenCheck) score += 25;
+      if (upperCheck) score += 25;
+      if (lowerCheck) score += 25;
+      if (numSymbolCheck) score += 25;
+
+      const bar = document.getElementById('password-strength-bar');
+      const label = document.getElementById('password-strength-label');
+
+      if (!bar || !label) return;
+
+      bar.style.width = score + '%';
+
+      if (score === 0) {
+        label.textContent = 'Too Short';
+        label.className = 'font-bold uppercase text-slate-subtle';
+        bar.className = 'h-full rounded-full transition-all duration-300 bg-slate-300';
+      } else if (score <= 25) {
+        label.textContent = 'Weak';
+        label.className = 'font-bold uppercase text-rose-500';
+        bar.className = 'h-full rounded-full transition-all duration-300 bg-rose-500';
+      } else if (score <= 50) {
+        label.textContent = 'Fair';
+        label.className = 'font-bold uppercase text-amber-500';
+        bar.className = 'h-full rounded-full transition-all duration-300 bg-amber-500';
+      } else if (score <= 75) {
+        label.textContent = 'Good';
+        label.className = 'font-bold uppercase text-clarity-blue';
+        bar.className = 'h-full rounded-full transition-all duration-300 bg-clarity-blue';
+      } else {
+        label.textContent = 'Strong';
+        label.className = 'font-bold uppercase text-emerald-600';
+        bar.className = 'h-full rounded-full transition-all duration-300 bg-emerald-500';
+      }
+    }
+
+    function updateRuleUI(id, isPassed) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const icon = el.querySelector('.material-symbols-outlined');
+      if (isPassed) {
+        el.className = 'flex items-center gap-1.5 text-emerald-600 font-medium';
+        if (icon) {
+          icon.textContent = 'check_circle';
+          icon.className = 'material-symbols-outlined text-sm text-emerald-600';
+        }
+      } else {
+        el.className = 'flex items-center gap-1.5 text-slate-subtle';
+        if (icon) {
+          icon.textContent = 'radio_button_unchecked';
+          icon.className = 'material-symbols-outlined text-sm text-slate-400';
+        }
+      }
+    }
+
+    // Attach Live Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      const nameInput = document.getElementById('reg-name');
+      const emailInput = document.getElementById('reg-email');
+      const passInput = document.getElementById('reg-password');
+      const confirmInput = document.getElementById('reg-confirm-password');
+
+      nameInput?.addEventListener('input', () => {
+        if (nameInput.value.length > 0) {
+          const res = Validator.validateName(nameInput.value);
+          if (res.valid) clearFieldError('reg-name');
+        }
+      });
+
+      emailInput?.addEventListener('input', () => {
+        if (emailInput.value.length > 0) {
+          const res = Validator.validateEmail(emailInput.value);
+          if (res.valid) clearFieldError('reg-email');
+        }
+      });
+
+      passInput?.addEventListener('input', () => {
+        evaluatePasswordStrength(passInput.value);
+        if (passInput.value.length > 0) {
+          const res = Validator.validatePassword(passInput.value);
+          if (res.valid) clearFieldError('reg-password');
+        }
+        if (confirmInput && confirmInput.value.length > 0) {
+          const cRes = Validator.validateConfirmPassword(passInput.value, confirmInput.value);
+          if (cRes.valid) clearFieldError('reg-confirm-password');
+        }
+      });
+
+      confirmInput?.addEventListener('input', () => {
+        if (confirmInput.value.length > 0) {
+          const res = Validator.validateConfirmPassword(passInput.value, confirmInput.value);
+          if (res.valid) clearFieldError('reg-confirm-password');
+        }
+      });
+    });
+
+    // Storage hook placeholder for Supabase integration in subsequent step
+    window.guardianAuthHooks = {
+      register: async (sanitizedUser) => {
+        console.info('[Guardian AI Auth Hook] User ready for Supabase Auth & Database:', sanitizedUser);
+        return { success: true };
+      }
+    };
+
+    /**
+     * Submit Handler
+     */
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+
+      const nameVal = Validator.validateName(document.getElementById('reg-name').value);
+      const emailVal = Validator.validateEmail(document.getElementById('reg-email').value);
+      const passVal = Validator.validatePassword(document.getElementById('reg-password').value);
+      const confirmVal = Validator.validateConfirmPassword(document.getElementById('reg-password').value, document.getElementById('reg-confirm-password').value);
+      const termsChecked = document.getElementById('reg-terms').checked;
+
+      // Update Error UI
+      if (!nameVal.valid) setFieldError('reg-name', nameVal.message); else clearFieldError('reg-name');
+      if (!emailVal.valid) setFieldError('reg-email', emailVal.message); else clearFieldError('reg-email');
+      if (!passVal.valid) setFieldError('reg-password', passVal.message); else clearFieldError('reg-password');
+      if (!confirmVal.valid) setFieldError('reg-confirm-password', confirmVal.message); else clearFieldError('reg-confirm-password');
+
+      const termsError = document.getElementById('reg-terms-error');
+      if (!termsChecked) {
+        if (termsError) termsError.classList.remove('hidden');
+      } else {
+        if (termsError) termsError.classList.add('hidden');
+      }
+
+      const allValid = nameVal.valid && emailVal.valid && passVal.valid && confirmVal.valid && termsChecked;
+      const alertEl = document.getElementById('reg-global-alert');
+
+      if (!allValid) {
+        if (alertEl) alertEl.classList.remove('hidden');
+        const firstInvalid = document.querySelector('#register-form [aria-invalid="true"]');
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+      if (alertEl) alertEl.classList.add('hidden');
+
+      // Package sanitized registration data
+      const sanitizedRegistration = {
+        fullName: nameVal.sanitized,
+        email: emailVal.sanitized,
+        password: passVal.sanitized,
+        // Spreadsheet safe version
+        spreadsheetSafe: {
+          fullName: sanitizeForSpreadsheet(nameVal.sanitized),
+          email: sanitizeForSpreadsheet(emailVal.sanitized)
+        },
+        // HTML escaped version for administrative UI
+        escaped: {
+          fullName: escapeHtml(nameVal.sanitized),
+          email: escapeHtml(emailVal.sanitized)
+        },
+        registeredAt: new Date().toISOString()
+      };
+
+      // Store in global window state and dispatch custom event
+      window.lastRegistrationPayload = sanitizedRegistration;
+      window.dispatchEvent(new CustomEvent('guardianUserRegistered', { detail: sanitizedRegistration }));
+
+      const submitBtn = document.getElementById('reg-submit-btn');
+      const submitText = document.getElementById('reg-submit-btn-text');
+      submitBtn.disabled = true;
+      submitText.textContent = 'Creating Secure Enclave...';
+
+      try {
+        if (window.guardianAuthHooks && window.guardianAuthHooks.register) {
+          await window.guardianAuthHooks.register(sanitizedRegistration);
+        }
+
+        setTimeout(() => {
+          submitBtn.disabled = false;
+          submitText.textContent = 'Create Guardian AI Account';
+          document.getElementById('reg-success-overlay').classList.remove('hidden');
+        }, 750);
+      } catch (err) {
+        console.error('Registration pipeline error:', err);
+        submitBtn.disabled = false;
+        submitText.textContent = 'Create Guardian AI Account';
+        if (alertEl) {
+          document.getElementById('reg-global-alert-text').textContent = 'Unable to complete registration. Please try again.';
+          alertEl.classList.remove('hidden');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
+
