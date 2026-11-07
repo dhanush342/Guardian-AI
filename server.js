@@ -450,34 +450,7 @@ app.use('/api', (req, res) => {
   res.status(404).json({ success: false, error: `API endpoint ${req.method} ${req.originalUrl} not found` });
 });
 
-// Helper to reliably locate static files across local Node, Vercel Serverless, and container roots
-function resolveStaticPath(relPath) {
-  if (!relPath) return null;
-  const clean = String(relPath).replace(/^\/+/, '');
-  const candidates = [
-    path.join(__dirname, clean),
-    path.join(__dirname, '..', clean),
-    path.join(process.cwd(), clean)
-  ];
-  for (const c of candidates) {
-    try {
-      if (fs.existsSync(c)) return c;
-    } catch (_) {}
-  }
-  return null;
-}
-
-const mimeTypes = {
-  '.html': 'text/html; charset=utf-8',
-  '.jpeg': 'image/jpeg',
-  '.jpg': 'image/jpeg',
-  '.png': 'image/png',
-  '.svg': 'image/svg+xml',
-  '.css': 'text/css; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.ico': 'image/x-icon'
-};
+const { getAsset } = require('./static-assets.js');
 
 // Explicit routes for top-level HTML pages (supports both clean URLs and .html extensions)
 const pageRoutes = {
@@ -498,14 +471,9 @@ const pageRoutes = {
 
 Object.entries(pageRoutes).forEach(([route, file]) => {
   const handler = (req, res) => {
-    const resolved = resolveStaticPath(file) || resolveStaticPath('index.html');
-    if (resolved) {
-      try {
-        const content = fs.readFileSync(resolved);
-        return res.status(200).set('Content-Type', 'text/html; charset=utf-8').send(content);
-      } catch (err) {
-        console.error('[Static Route Error]:', err);
-      }
+    const asset = getAsset(file) || getAsset('index.html');
+    if (asset) {
+      return res.status(200).set('Content-Type', asset.contentType).send(asset.buffer);
     }
     res.status(404).send('Page not found');
   };
@@ -518,27 +486,17 @@ app.get('/{*splat}', (req, res) => {
   const rawSplat = req.params.splat;
   const cleanPath = (Array.isArray(rawSplat) ? rawSplat.join('/') : String(rawSplat || '')).replace(/^\/+/, '');
   if (cleanPath) {
-    const resolved = resolveStaticPath(cleanPath);
-    if (resolved) {
-      try {
-        if (fs.statSync(resolved).isFile()) {
-          const ext = path.extname(resolved).toLowerCase();
-          const contentType = mimeTypes[ext] || 'application/octet-stream';
-          const buffer = fs.readFileSync(resolved);
-          return res.status(200).set('Content-Type', contentType).send(buffer);
-        }
-      } catch (_) {}
+    const asset = getAsset(cleanPath);
+    if (asset) {
+      return res.status(200).set('Content-Type', asset.contentType).send(asset.buffer);
     }
   }
   if (path.extname(req.path)) {
     return res.status(404).send('Not Found');
   }
-  const idx = resolveStaticPath('index.html');
+  const idx = getAsset('index.html');
   if (idx) {
-    try {
-      const content = fs.readFileSync(idx);
-      return res.status(200).set('Content-Type', 'text/html; charset=utf-8').send(content);
-    } catch (_) {}
+    return res.status(200).set('Content-Type', idx.contentType).send(idx.buffer);
   }
   res.sendFile(path.join(__dirname, 'index.html'));
 });
