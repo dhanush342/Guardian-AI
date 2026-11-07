@@ -7,7 +7,7 @@
     "build": "node generate-static-assets.js",
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node auth.test.js && node captcha.test.js && node profile.test.js && node server.test.js"
+    "test": "node auth.test.js && node captcha.test.js && node captcha-ui.test.js && node profile.test.js && node server.test.js"
   },
   "keywords": [
     "guardian-ai",

@@ -1,7 +1,13 @@
 let guardianCaptchaToken = '';
 let guardianCaptchaWidget;
+let guardianCaptchaState = 'loading';
+function captchaSubmitEnabled(enabled) {
+  const button = document.getElementById('reg-submit-btn') || document.getElementById('login-submit-btn');
+  if (button) button.disabled = !enabled;
+}
 window.getGuardianCaptchaToken = () => {
   if (!guardianCaptchaToken) {
+    if (guardianCaptchaState !== 'ready') throw new Error(document.getElementById('captcha-status')?.textContent || 'Security verification is unavailable. Please try again later.');
     const widget = document.getElementById('captcha-widget');
     const status = document.getElementById('captcha-status');
     if (widget) {
@@ -20,6 +26,7 @@ window.getGuardianCaptchaToken = () => {
 };
 window.resetGuardianCaptcha = () => {
   guardianCaptchaToken = '';
+  captchaSubmitEnabled(false);
   if (guardianCaptchaWidget !== undefined && window.turnstile) window.turnstile.reset(guardianCaptchaWidget);
 };
 window.guardianTurnstileReady = async () => {
@@ -29,13 +36,16 @@ window.guardianTurnstileReady = async () => {
     if (!response.ok) throw new Error('Security verification could not load. Please refresh the page.');
     const config = await response.json();
     const sitekey = config.turnstileSiteKey;
-    if (!sitekey) throw new Error('Security verification is unavailable. Please try again later.');
+    if (!sitekey || !config.supabaseUrl || !config.supabaseAnonKey) throw new Error('Account access is temporarily unavailable. Please contact support.');
+    guardianCaptchaState = 'ready';
     guardianCaptchaWidget = window.turnstile.render('#captcha-widget', {
       sitekey: sitekey,
       action: document.getElementById('captcha-widget').dataset.action,
       theme: 'light', size: 'flexible',
       callback: token => {
         guardianCaptchaToken = token;
+        guardianCaptchaState = 'ready';
+        captchaSubmitEnabled(true);
         if (status) {
           status.classList.remove('text-rose-600', 'font-semibold');
           status.classList.add('text-emerald-600', 'font-medium');
@@ -44,6 +54,7 @@ window.guardianTurnstileReady = async () => {
       },
       'expired-callback': () => {
         guardianCaptchaToken = '';
+        captchaSubmitEnabled(false);
         if (status) {
           status.classList.remove('text-emerald-600');
           status.classList.add('text-slate-subtle');
@@ -52,6 +63,7 @@ window.guardianTurnstileReady = async () => {
       },
       'error-callback': () => {
         guardianCaptchaToken = '';
+        captchaSubmitEnabled(false);
         if (status) {
           status.classList.remove('text-emerald-600');
           status.classList.add('text-rose-600');
@@ -61,16 +73,23 @@ window.guardianTurnstileReady = async () => {
     });
     if (status) status.textContent = 'Complete the security verification.';
   } catch (error) {
+    guardianCaptchaState = 'unavailable';
+    captchaSubmitEnabled(false);
     if (status) status.textContent = error.message;
   }
 };
-document.addEventListener('DOMContentLoaded', () => {
+function initCaptcha() {
+  captchaSubmitEnabled(false);
   const script = document.createElement('script');
   script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=guardianTurnstileReady&render=explicit';
   script.async = true;
   script.onerror = () => {
+    guardianCaptchaState = 'unavailable';
+    captchaSubmitEnabled(false);
     const status = document.getElementById('captcha-status');
     if (status) status.textContent = 'Security verification could not load. Please refresh and try again.';
   };
   document.head.appendChild(script);
-});
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCaptcha);
+else initCaptcha();
