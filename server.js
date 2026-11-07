@@ -471,7 +471,7 @@ const pageRoutes = {
 
 Object.entries(pageRoutes).forEach(([route, file]) => {
   const handler = (req, res) => {
-    const asset = getAsset(file) || getAsset('index.html');
+    const asset = getAsset(file);
     if (asset) {
       return res.status(200).set('Content-Type', asset.contentType).send(asset.buffer);
     }
