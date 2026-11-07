@@ -28,7 +28,7 @@ window.guardianTurnstileReady = async () => {
     const response = await fetch('/api/config');
     if (!response.ok) throw new Error('Security verification could not load. Please refresh the page.');
     const config = await response.json();
-    const sitekey = config.turnstileSiteKey || '0x4AAAAAAF3T2vkTkiWj3R2Y';
+    const sitekey = config.turnstileSiteKey;
     if (!sitekey) throw new Error('Security verification is unavailable. Please try again later.');
     guardianCaptchaWidget = window.turnstile.render('#captcha-widget', {
       sitekey: sitekey,

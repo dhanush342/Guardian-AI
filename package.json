@@ -1,12 +1,13 @@
 {
   "name": "guardian-ai",
   "version": "1.0.0",
-  "description": "Guardian AI — Real-Time AI Safety & Enterprise Defense Platform",
+  "description": "Guardian AI \u2014 Real-Time AI Safety & Enterprise Defense Platform",
   "main": "server.js",
   "scripts": {
     "build": "node generate-static-assets.js",
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "node auth.test.js && node captcha.test.js && node profile.test.js && node server.test.js"
   },
   "keywords": [
     "guardian-ai",
@@ -18,5 +19,8 @@
   "dependencies": {
     "dotenv": "^18.0.9",
     "express": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=22 <25"
   }
 }

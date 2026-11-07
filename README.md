@@ -63,3 +63,15 @@ Sign-in and signup use Cloudflare Turnstile. The server verifies each token with
 5. Test signup/sign-in, a failed CAPTCHA, an expired challenge, and signup without terms acceptance.
 
 The current integration validates tokens on the Node server. Do not separately enable Supabase CAPTCHA using the same tokens: Turnstile tokens are single-use. If protecting direct Supabase Auth calls is required, switch to Supabase-managed CAPTCHA verification rather than validating the same token twice.
+
+## Production deployment (Vercel)
+
+The build copies only files listed in `public-files.json` into `public/`. Vercel serves those public assets and routes API/clean page requests to `api/index.js`. Backend source, environment files, tests, and manifests must not be in the public output. Unknown routes return 404.
+
+Set these variables in the Vercel project environment (Production and any Preview environment you use): `APP_URL` (the public HTTPS origin), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, and `GOOGLE_SHEET_WEBHOOK_URL`. `SUPABASE_SERVICE_KEY` is optional for contact database writes and must be a backend secret/service-role key. No private credentials have source-code defaults.
+
+In Supabase Auth URL settings, set Site URL to the production origin and allow both `/confirm-email.html` and `/reset-password.html` on that origin. Enable email confirmation and custom SMTP. Allow the production hostname in Cloudflare Turnstile.
+
+The previously hardcoded Turnstile secret must be rotated in Cloudflare, then updated in the Vercel environment and local `.env`; removal from the latest source does not revoke historical exposure. Redeploy after updating environment variables.
+
+Validation: `npm run build` and `npm test`. The in-process rate limiter is best effort on serverless instances; configure Vercel Firewall rate limits for shared production enforcement. The local tests do not prove SMTP delivery, provider dashboard settings, or a human CAPTCHA completion.

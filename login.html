@@ -198,7 +198,7 @@ function handleLogoError(img) {
           <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-subtle select-none">
             <input class="w-4 h-4 rounded border-border-light text-signal-blue focus:ring-signal-blue"
               id="login-remember" type="checkbox">
-            <span>Remember this device for 30 days</span>
+            <span>Keep me signed in</span>
           </label>
         </div>
 
@@ -456,7 +456,7 @@ function handleLogoError(img) {
           if (!result.session?.accessToken || !result.session?.refreshToken) {
             throw new Error('No session was returned. Please sign in again.');
           }
-          const client = await getSupabase();
+          const client = await getSupabase({ rememberMe: sanitizedCredentials.rememberMe });
           const { error } = await client.auth.setSession({
             access_token: result.session.accessToken,
             refresh_token: result.session.refreshToken
@@ -582,7 +582,7 @@ function handleLogoError(img) {
       try {
         const client = await getSupabase();
         const { error } = await client.auth.resetPasswordForEmail(cleanEmail, {
-          redirectTo: window.location.origin + '/login.html'
+          redirectTo: window.location.origin + '/reset-password.html'
         });
         if (error) throw error;
         alert('Password reset instructions have been dispatched to ' + cleanEmail);

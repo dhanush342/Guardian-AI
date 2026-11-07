@@ -1,10 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": true,
-  "trailingSlash": false,
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
   "functions": {
-    "api/**/*.js": {
-      "includeFiles": "*.html,*.jpeg,*.jpg,*.png,*.css,*.js"
+    "api/index.js": {
+      "includeFiles": "public/**"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/api/index"
+    }
+  ]
 }

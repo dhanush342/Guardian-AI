@@ -1,39 +1,39 @@
 'use strict';
 
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const express  = require('express');
 const path     = require('path');
 const validateEmail = require('./email-validation');
 const verifyCaptcha = require('./captcha-server');
+const fetchRemote = (url, options) => require('./http-client')(fetch, url, options);
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 const APP_URL = process.env.APP_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${PORT}`));
-const confirmationRedirect = new URL('/confirm-email.html', APP_URL).href;
+const appOrigin = new URL(APP_URL);
+if (!['http:', 'https:'].includes(appOrigin.protocol) || (process.env.VERCEL && (appOrigin.protocol !== 'https:' || ['localhost', '127.0.0.1'].includes(appOrigin.hostname)))) throw new Error('APP_URL must be the public HTTPS application origin on Vercel.');
+const confirmationRedirect = new URL('/confirm-email.html', appOrigin.origin).href;
 
 // ─── Environment Variables ─────────────────────────────────────────────────
-const SUPABASE_URL             = process.env.SUPABASE_URL || 'https://poxthygbrkgyufqyzdtc.supabase.co';
-const SUPABASE_ANON_KEY        = process.env.SUPABASE_ANON_KEY || 'sb_publishable_SFY3aSeAJuc31NBZgiJJVA_hJD3-bdH';
+const SUPABASE_URL             = process.env.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY        = process.env.SUPABASE_ANON_KEY || '';
 const SUPABASE_SERVICE_KEY     = process.env.SUPABASE_SERVICE_KEY || '';
-const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL || 'https://script.google.com/macros/s/AKfycbxefnBlnSX6ic0Yt7iCXIOiK-4_F3J5otEBHi6Zl6HggM01OJ3opUMGvx2o8x0CubyDag/exec';
-const TURNSTILE_SITE_KEY       = process.env.TURNSTILE_SITE_KEY || '0x4AAAAAAF3T2vkTkiWj3R2Y';
-const TURNSTILE_SECRET_KEY     = process.env.TURNSTILE_SECRET_KEY || '0x4AAAAAAF3T2sBaipxsknp4FzuRUhMSv4g';
+const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL || '';
+const TURNSTILE_SITE_KEY       = process.env.TURNSTILE_SITE_KEY || '';
+const TURNSTILE_SECRET_KEY     = process.env.TURNSTILE_SECRET_KEY || '';
 
 // ─── Middleware ────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '20kb' }));
-app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
+app.use((req, res, next) => {
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (req.path.startsWith('/api/')) res.set('Cache-Control', 'no-store');
+  next();
+});
 
 // ─── GET /api/config (Public runtime client configuration) ─────────────────
 app.get('/api/config', (req, res) => {
-  let rootFiles = [];
-  let dirFiles = [];
-  try { rootFiles = fs.readdirSync(process.cwd()); } catch (_) {}
-  try { dirFiles = fs.readdirSync(__dirname); } catch (_) {}
   res.json({
-    cwd: process.cwd(),
-    dirname: __dirname,
-    rootFiles,
-    dirFiles,
     supabaseUrl: SUPABASE_URL || '',
     supabaseAnonKey: SUPABASE_ANON_KEY || '',
     turnstileSiteKey: TURNSTILE_SITE_KEY || ''
@@ -46,7 +46,9 @@ const RATE_LIMIT   = 5;
 const WINDOW_MS    = 60 * 1000;
 
 function rateLimiter(req, res, next) {
-  const ip  = req.ip || req.connection.remoteAddress || 'unknown';
+  const forwarded = process.env.VERCEL && req.headers['x-vercel-forwarded-for'];
+  const ip = (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : req.ip) || req.socket?.remoteAddress || 'unknown';
+  for (const [key, value] of rateLimitMap) if (Date.now() - value.windowStart > WINDOW_MS) rateLimitMap.delete(key);
   const now = Date.now();
   let   rec = rateLimitMap.get(ip);
 
@@ -103,6 +105,9 @@ function sanitizeForSpreadsheet(val) {
 app.post('/api/contact', rateLimiter, async (req, res) => {
   try {
     const body = req.body || {};
+    for (const [field, max] of Object.entries({ name: 70, email: 100, company: 100, phone: 25, inquiry: 50, message: 2000 })) {
+      if (body[field] !== undefined && (typeof body[field] !== 'string' || body[field].length > max)) return res.status(400).json({ success: false, error: `${field} is invalid or exceeds ${max} characters.` });
+    }
 
     // 1. Clean & sanitize incoming raw input
     const name    = cleanString(body.name, 70);
@@ -229,7 +234,7 @@ async function forwardToSupabase(payload) {
     return { ok: false, error: 'Missing SUPABASE_URL or SUPABASE_SERVICE_KEY in .env' };
   }
   const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/rest/v1/contact_inquiries`;
-  const response = await fetch(endpoint, {
+  const response = await fetchRemote(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type':  'application/json',
@@ -261,7 +266,7 @@ async function forwardToGoogleSheet(payload) {
     console.warn('[Google Sheet] Webhook URL not configured — skipping.');
     return { ok: false, error: 'Missing GOOGLE_SHEET_WEBHOOK_URL in .env' };
   }
-  const response = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+  const response = await fetchRemote(GOOGLE_SHEET_WEBHOOK_URL, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify(payload)
@@ -281,6 +286,7 @@ app.post('/api/register', rateLimiter, async (req, res) => {
     const { fullName, email, password, organization } = req.body || {};
     if (organization !== undefined && (typeof organization !== 'string' || organization.trim().length > 100)) return res.status(400).json({ success: false, error: 'Organization must be at most 100 characters.' });
 
+    if (typeof fullName !== 'string' || fullName.length > 70) return res.status(400).json({ success: false, error: 'Full name must be 2–70 characters.' });
     const cleanName  = cleanString(fullName, 70);
     const emailValidation = validateEmail(email);
     const cleanEmail = emailValidation.sanitized;
@@ -307,7 +313,7 @@ app.post('/api/register', rateLimiter, async (req, res) => {
     if (captchaError) return res.status(captchaError.status).json({ success: false, error: captchaError.error });
 
     const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/signup?redirect_to=${encodeURIComponent(confirmationRedirect)}`;
-    const response = await fetch(endpoint, {
+    const response = await fetchRemote(endpoint, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -360,7 +366,7 @@ app.post('/api/resend-confirmation', rateLimiter, async (req, res) => {
   if (!validation.valid) return res.status(400).json({ success: false, error: validation.message });
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return res.status(503).json({ success: false, error: 'Email confirmation is unavailable.' });
   try {
-    const response = await fetch(`${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/resend?redirect_to=${encodeURIComponent(confirmationRedirect)}`, {
+    const response = await fetchRemote(`${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/resend?redirect_to=${encodeURIComponent(confirmationRedirect)}`, {
       method: 'POST',
       headers: { apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'signup', email: validation.sanitized })
@@ -400,7 +406,7 @@ app.post('/api/login', rateLimiter, async (req, res) => {
     if (captchaError) return res.status(captchaError.status).json({ success: false, error: captchaError.error });
 
     const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/token?grant_type=password`;
-    const response = await fetch(endpoint, {
+    const response = await fetchRemote(endpoint, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -468,7 +474,8 @@ const pageRoutes = {
   '/profile': 'profile.html',
   '/confirm-email': 'confirm-email.html',
   '/demo': 'demo.html',
-  '/analysis': 'analysis.html'
+  '/analysis': 'analysis.html',
+  '/reset-password': 'reset-password.html'
 };
 
 Object.entries(pageRoutes).forEach(([route, file]) => {
@@ -483,31 +490,20 @@ Object.entries(pageRoutes).forEach(([route, file]) => {
   app.get(route + '.html', handler);
 });
 
-// For assets and catch-all routing
+// Serve only explicitly public assets. Backend files and unknown routes are never public.
 app.get('/{*splat}', (req, res) => {
-  const rawSplat = req.params.splat;
-  const cleanPath = (Array.isArray(rawSplat) ? rawSplat.join('/') : String(rawSplat || '')).replace(/^\/+/, '');
-  if (cleanPath) {
-    const asset = getAsset(cleanPath);
-    if (asset) {
-      return res.status(200).set('Content-Type', asset.contentType).send(asset.buffer);
-    }
-  }
-  if (path.extname(req.path)) {
-    return res.status(404).send('Not Found');
-  }
-  const idx = getAsset('index.html');
-  if (idx) {
-    return res.status(200).set('Content-Type', idx.contentType).send(idx.buffer);
-  }
-  res.sendFile(path.join(__dirname, 'index.html'));
+  const name = req.path === '/' ? 'index.html' : req.path.slice(1);
+  const asset = getAsset(name);
+  if (!asset) return res.status(404).send('Not Found');
+  return res.set('Content-Type', asset.contentType).send(asset.buffer);
 });
 
 // Centralized error handler
 app.use((err, req, res, next) => {
-  console.error('[Guardian AI Server Error]:', err);
+  console.error('[Guardian AI Server Error]:', err.type || err.name || 'Error');
   if (res.headersSent) return next(err);
-  res.status(500).json({ success: false, error: 'Internal server error' });
+  const status = err.type === 'entity.too.large' ? 413 : err instanceof SyntaxError && err.status === 400 ? 400 : 500;
+  res.status(status).json({ success: false, error: status === 400 ? 'Invalid JSON request.' : status === 413 ? 'Request is too large.' : 'Internal server error' });
 });
 
 // ─── Start ─────────────────────────────────────────────────────────────────

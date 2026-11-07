@@ -1,4 +1,6 @@
 module.exports = function installProfileRoutes(app, { url, key, rateLimiter, fetcher = fetch }) {
+  const upstream = fetcher;
+  fetcher = (url, options) => require('./http-client')(upstream, url, options);
   async function currentUser(req) {
     if (!url || !key) throw new Error('Authentication is unavailable.');
     const authorization = req.headers.authorization;
