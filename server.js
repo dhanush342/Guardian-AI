@@ -442,6 +442,23 @@ app.use('/api', (req, res) => {
   res.status(404).json({ success: false, error: `API endpoint ${req.method} ${req.originalUrl} not found` });
 });
 
+// Helper to reliably locate static files across local Node, Vercel Serverless, and container roots
+function resolveStaticPath(relPath) {
+  if (!relPath) return null;
+  const clean = String(relPath).replace(/^\/+/, '');
+  const candidates = [
+    path.join(__dirname, clean),
+    path.join(__dirname, '..', clean),
+    path.join(process.cwd(), clean)
+  ];
+  for (const c of candidates) {
+    try {
+      if (fs.existsSync(c)) return c;
+    } catch (_) {}
+  }
+  return null;
+}
+
 // Explicit routes for top-level HTML pages (supports both clean URLs and .html extensions)
 const pageRoutes = {
   '/login': 'login.html',
@@ -461,11 +478,15 @@ const pageRoutes = {
 
 Object.entries(pageRoutes).forEach(([route, file]) => {
   const handler = (req, res) => {
-    const filePath = path.join(__dirname, file);
-    if (fs.existsSync(filePath)) {
-      return res.sendFile(filePath);
+    const resolved = resolveStaticPath(file) || resolveStaticPath('index.html');
+    if (resolved) {
+      return res.sendFile(resolved, (err) => {
+        if (err && !res.headersSent) {
+          res.status(500).send('Page load error');
+        }
+      });
     }
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.status(404).send('Page not found');
   };
   app.get(route, handler);
   app.get(route + '.html', handler);
@@ -475,14 +496,31 @@ Object.entries(pageRoutes).forEach(([route, file]) => {
 app.get('/{*splat}', (req, res) => {
   const rawSplat = req.params.splat;
   const cleanPath = (Array.isArray(rawSplat) ? rawSplat.join('/') : String(rawSplat || '')).replace(/^\/+/, '');
-  const requestedPath = path.join(__dirname, cleanPath);
-  if (cleanPath && fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
-    return res.sendFile(requestedPath);
+  if (cleanPath) {
+    const resolved = resolveStaticPath(cleanPath);
+    if (resolved) {
+      try {
+        if (fs.statSync(resolved).isFile()) {
+          return res.sendFile(resolved);
+        }
+      } catch (_) {}
+    }
   }
   if (path.extname(req.path)) {
     return res.status(404).send('Not Found');
   }
+  const idx = resolveStaticPath('index.html');
+  if (idx) {
+    return res.sendFile(idx);
+  }
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Centralized error handler
+app.use((err, req, res, next) => {
+  console.error('[Guardian AI Server Error]:', err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ success: false, error: 'Internal server error' });
 });
 
 // ─── Start ─────────────────────────────────────────────────────────────────
