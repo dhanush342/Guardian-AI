@@ -23,7 +23,15 @@ app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
 // ─── GET /api/config (Public runtime client configuration) ─────────────────
 app.get('/api/config', (req, res) => {
+  let rootFiles = [];
+  let dirFiles = [];
+  try { rootFiles = fs.readdirSync(process.cwd()); } catch (_) {}
+  try { dirFiles = fs.readdirSync(__dirname); } catch (_) {}
   res.json({
+    cwd: process.cwd(),
+    dirname: __dirname,
+    rootFiles,
+    dirFiles,
     supabaseUrl: SUPABASE_URL || '',
     supabaseAnonKey: SUPABASE_ANON_KEY || '',
     turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || ''
@@ -459,6 +467,18 @@ function resolveStaticPath(relPath) {
   return null;
 }
 
+const mimeTypes = {
+  '.html': 'text/html; charset=utf-8',
+  '.jpeg': 'image/jpeg',
+  '.jpg': 'image/jpeg',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.ico': 'image/x-icon'
+};
+
 // Explicit routes for top-level HTML pages (supports both clean URLs and .html extensions)
 const pageRoutes = {
   '/login': 'login.html',
@@ -480,11 +500,12 @@ Object.entries(pageRoutes).forEach(([route, file]) => {
   const handler = (req, res) => {
     const resolved = resolveStaticPath(file) || resolveStaticPath('index.html');
     if (resolved) {
-      return res.sendFile(resolved, (err) => {
-        if (err && !res.headersSent) {
-          res.status(500).send('Page load error');
-        }
-      });
+      try {
+        const content = fs.readFileSync(resolved);
+        return res.status(200).set('Content-Type', 'text/html; charset=utf-8').send(content);
+      } catch (err) {
+        console.error('[Static Route Error]:', err);
+      }
     }
     res.status(404).send('Page not found');
   };
@@ -492,7 +513,7 @@ Object.entries(pageRoutes).forEach(([route, file]) => {
   app.get(route + '.html', handler);
 });
 
-// For assets that have extensions (.png, .jpg, .jpeg, .svg, .css, .js, .ico), do not return index.html
+// For assets and catch-all routing
 app.get('/{*splat}', (req, res) => {
   const rawSplat = req.params.splat;
   const cleanPath = (Array.isArray(rawSplat) ? rawSplat.join('/') : String(rawSplat || '')).replace(/^\/+/, '');
@@ -501,7 +522,10 @@ app.get('/{*splat}', (req, res) => {
     if (resolved) {
       try {
         if (fs.statSync(resolved).isFile()) {
-          return res.sendFile(resolved);
+          const ext = path.extname(resolved).toLowerCase();
+          const contentType = mimeTypes[ext] || 'application/octet-stream';
+          const buffer = fs.readFileSync(resolved);
+          return res.status(200).set('Content-Type', contentType).send(buffer);
         }
       } catch (_) {}
     }
@@ -511,7 +535,10 @@ app.get('/{*splat}', (req, res) => {
   }
   const idx = resolveStaticPath('index.html');
   if (idx) {
-    return res.sendFile(idx);
+    try {
+      const content = fs.readFileSync(idx);
+      return res.status(200).set('Content-Type', 'text/html; charset=utf-8').send(content);
+    } catch (_) {}
   }
   res.sendFile(path.join(__dirname, 'index.html'));
 });

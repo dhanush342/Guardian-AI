@@ -4,7 +4,10 @@
   "trailingSlash": false,
   "functions": {
     "api/index.js": {
-      "includeFiles": "*.{html,jpeg,png,jpg,svg,css,js,json}"
+      "includeFiles": "**"
+    },
+    "server.js": {
+      "includeFiles": "**"
     }
   },
   "rewrites": [
