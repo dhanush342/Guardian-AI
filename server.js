@@ -19,7 +19,7 @@ const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL;
 
 // ─── Middleware ────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '20kb' }));
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
 // ─── GET /api/config (Public runtime client configuration) ─────────────────
 app.get('/api/config', (req, res) => {
@@ -437,14 +437,25 @@ app.post('/api/login', rateLimiter, async (req, res) => {
 
 require('./profile-routes')(app, { url: SUPABASE_URL?.replace(/\/+$/, ''), key: SUPABASE_ANON_KEY, rateLimiter });
 
-// ─── SPA fallback: catch-all → index.html ─────────────────────────────────
+// ─── Fallback & 404 Routing ─────────────────────────────────────────────────
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, error: `API endpoint ${req.method} ${req.originalUrl} not found` });
+});
+
 app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ─── Start ─────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n  Guardian AI server running at http://localhost:${PORT}`);
-  console.log(`  Supabase   : ${SUPABASE_URL             ? '✓ configured' : '✗ NOT set (check .env)'}`);
-  console.log(`  Google Sheet: ${GOOGLE_SHEET_WEBHOOK_URL ? '✓ configured' : '✗ NOT set (check .env)'}\n`);
-});
+const isMain = typeof module !== 'undefined' && typeof require !== 'undefined' && require.main === module;
+if (!process.env.VERCEL && isMain) {
+  app.listen(PORT, () => {
+    console.log(`\n  Guardian AI server running at http://localhost:${PORT}`);
+    console.log(`  Supabase   : ${SUPABASE_URL             ? '✓ configured' : '✗ NOT set (check .env)'}`);
+    console.log(`  Google Sheet: ${GOOGLE_SHEET_WEBHOOK_URL ? '✓ configured' : '✗ NOT set (check .env)'}\n`);
+  });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = app;
+}
