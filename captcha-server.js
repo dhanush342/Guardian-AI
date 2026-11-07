@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = async function verifyCaptcha(token, action, { secret, siteKey, appUrl, fetcher = fetch }) {
   if (!secret || !siteKey) return { status: 503, error: 'Security verification is unavailable. Please try again later.' };
   if (typeof token !== 'string' || !token.trim() || token.length > 2048) {
@@ -11,7 +12,20 @@ module.exports = async function verifyCaptcha(token, action, { secret, siteKey, 
     });
     if (!response.ok) throw new Error('Verification service unavailable');
     const result = await response.json();
-    if (!result.success || result.action !== action || result.hostname !== new URL(appUrl).hostname) {
+    
+    let expectedHost = '';
+    try {
+      expectedHost = appUrl ? new URL(appUrl).hostname : '';
+    } catch (_) {}
+
+    const isHostnameMatch = result.hostname === expectedHost ||
+      ((expectedHost === 'localhost' || !expectedHost || expectedHost === '127.0.0.1') && (
+        result.hostname === 'localhost' ||
+        result.hostname === '127.0.0.1' ||
+        (result.hostname && (result.hostname === 'guardian-ai-new.vercel.app' || result.hostname.endsWith('.vercel.app')))
+      ));
+
+    if (!result.success || result.action !== action || !isHostnameMatch) {
       return { status: 400, error: 'Security verification failed or expired. Please verify again.' };
     }
     return null;

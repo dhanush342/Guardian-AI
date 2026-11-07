@@ -111,3 +111,4 @@ module.exports = {
 
 fs.writeFileSync(path.join(__dirname, 'static-assets.js'), staticAssetsJsContent, 'utf8');
 console.log('Successfully generated static-assets.js');
+

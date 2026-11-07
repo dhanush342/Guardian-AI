@@ -8,14 +8,16 @@ const verifyCaptcha = require('./captcha-server');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
-const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
+const APP_URL = process.env.APP_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${PORT}`));
 const confirmationRedirect = new URL('/confirm-email.html', APP_URL).href;
 
 // ─── Environment Variables ─────────────────────────────────────────────────
-const SUPABASE_URL             = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY        = process.env.SUPABASE_ANON_KEY;
-const SUPABASE_SERVICE_KEY     = process.env.SUPABASE_SERVICE_KEY;
-const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL;
+const SUPABASE_URL             = process.env.SUPABASE_URL || 'https://poxthygbrkgyufqyzdtc.supabase.co';
+const SUPABASE_ANON_KEY        = process.env.SUPABASE_ANON_KEY || 'sb_publishable_SFY3aSeAJuc31NBZgiJJVA_hJD3-bdH';
+const SUPABASE_SERVICE_KEY     = process.env.SUPABASE_SERVICE_KEY || '';
+const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL || 'https://script.google.com/macros/s/AKfycbxefnBlnSX6ic0Yt7iCXIOiK-4_F3J5otEBHi6Zl6HggM01OJ3opUMGvx2o8x0CubyDag/exec';
+const TURNSTILE_SITE_KEY       = process.env.TURNSTILE_SITE_KEY || '0x4AAAAAAF3T2vkTkiWj3R2Y';
+const TURNSTILE_SECRET_KEY     = process.env.TURNSTILE_SECRET_KEY || '0x4AAAAAAF3T2sBaipxsknp4FzuRUhMSv4g';
 
 // ─── Middleware ────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '20kb' }));
@@ -34,7 +36,7 @@ app.get('/api/config', (req, res) => {
     dirFiles,
     supabaseUrl: SUPABASE_URL || '',
     supabaseAnonKey: SUPABASE_ANON_KEY || '',
-    turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || ''
+    turnstileSiteKey: TURNSTILE_SITE_KEY || ''
   });
 });
 
@@ -299,7 +301,7 @@ app.post('/api/register', rateLimiter, async (req, res) => {
 
     if (req.body?.acceptedTerms !== true) return res.status(400).json({ success: false, error: 'Please accept the Terms of Service and Privacy Policy.' });
     const captchaError = await verifyCaptcha(req.body?.captchaToken, 'signup', {
-      secret: process.env.TURNSTILE_SECRET_KEY, siteKey: process.env.TURNSTILE_SITE_KEY,
+      secret: TURNSTILE_SECRET_KEY, siteKey: TURNSTILE_SITE_KEY,
       appUrl: APP_URL
     });
     if (captchaError) return res.status(captchaError.status).json({ success: false, error: captchaError.error });
@@ -392,7 +394,7 @@ app.post('/api/login', rateLimiter, async (req, res) => {
     }
 
     const captchaError = await verifyCaptcha(req.body?.captchaToken, 'signin', {
-      secret: process.env.TURNSTILE_SECRET_KEY, siteKey: process.env.TURNSTILE_SITE_KEY,
+      secret: TURNSTILE_SECRET_KEY, siteKey: TURNSTILE_SITE_KEY,
       appUrl: APP_URL
     });
     if (captchaError) return res.status(captchaError.status).json({ success: false, error: captchaError.error });
