@@ -472,9 +472,11 @@ Object.entries(pageRoutes).forEach(([route, file]) => {
 });
 
 // For assets that have extensions (.png, .jpg, .jpeg, .svg, .css, .js, .ico), do not return index.html
-app.get('*', (req, res) => {
-  const requestedPath = path.join(__dirname, req.path);
-  if (fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
+app.get('/{*splat}', (req, res) => {
+  const rawSplat = req.params.splat;
+  const cleanPath = (Array.isArray(rawSplat) ? rawSplat.join('/') : String(rawSplat || '')).replace(/^\/+/, '');
+  const requestedPath = path.join(__dirname, cleanPath);
+  if (cleanPath && fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
     return res.sendFile(requestedPath);
   }
   if (path.extname(req.path)) {
