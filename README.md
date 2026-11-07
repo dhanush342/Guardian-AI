@@ -66,7 +66,7 @@ The current integration validates tokens on the Node server. Do not separately e
 
 ## Production deployment (Vercel)
 
-The build copies only files listed in `public-files.json` into `public/`. Vercel serves those public assets and routes API/clean page requests to `api/index.js`. Backend source, environment files, tests, and manifests must not be in the public output. Unknown routes return 404.
+The build copies only files listed in `public-files.json` into `public/`. Vercel’s native Express preset serves those public assets through its CDN and runs `server.js` for API and clean-page requests. Backend source, environment files, tests, and manifests must not be in the public output. Unknown routes return 404.
 
 Set these variables in the Vercel project environment (Production and any Preview environment you use): `APP_URL` (the public HTTPS origin), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, and `GOOGLE_SHEET_WEBHOOK_URL`. `SUPABASE_SERVICE_KEY` is optional for contact database writes and must be a backend secret/service-role key. No private credentials have source-code defaults.
 
