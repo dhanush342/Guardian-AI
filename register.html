@@ -23,6 +23,7 @@
     rel="stylesheet">
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="email-validation.js"></script>
 
   <style>
     @layer base {
@@ -75,7 +76,14 @@
       }
     };
   </script>
-</head>
+  <script src="captcha.js" defer></script>
+<style>
+    #reg-terms{appearance:none;-webkit-appearance:none;width:20px;height:20px;min-width:20px;border:2px solid #000;border-radius:3px;background:#fff;cursor:pointer;display:inline-grid;place-content:center;flex-shrink:0}
+    #reg-terms:checked{background:#000;border-color:#000;background-image:none}
+    #reg-terms:checked::after{content:'';width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+    #reg-terms:focus-visible{outline:3px solid #2e6db4;outline-offset:3px}
+    #reg-terms[aria-invalid="true"]{outline:2px solid #e11d48;outline-offset:2px}
+  </style></head>
 
 <body
   class="bg-mist font-sans text-charcoal antialiased selection:bg-[#EBF3FB] selection:text-authority-blue min-h-screen flex flex-col justify-between">
@@ -112,23 +120,10 @@
     <div
       class="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl border border-border-light shadow-2xl shadow-signal-blue/10 p-6 sm:p-10 relative z-10">
 
-      <!-- Card Badge -->
-      <div class="flex items-center justify-between mb-4">
-        <div
-          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-border-light text-xs font-mono text-authority-blue font-semibold uppercase tracking-wider">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Secure Enterprise Onboarding
-        </div>
-        <span class="font-mono text-xs text-slate-subtle">ENCLAVE v4.9</span>
-      </div>
-
       <!-- Card Title & Subtitle -->
       <h1 class="font-serif text-3xl sm:text-4xl font-bold text-near-black tracking-tight leading-tight mb-2">
         Create Your <span class="hero-gradient-text">Guardian AI</span> Account
       </h1>
-      <p class="font-sans text-sm text-slate-subtle leading-relaxed mb-6">
-        Deploy autonomous AI safety policies, protect your multimodal workloads, and gain real-time prompt telemetry.
-      </p>
 
       <!-- Global Error Alert Banner -->
       <div
@@ -158,6 +153,8 @@
             <span id="reg-name-error-text">Please enter a valid full name (2–70 characters, letters only).</span>
           </p>
         </div>
+
+        <div><label class="block text-xs font-semibold text-authority-blue mb-1.5" for="reg-organization">Organization name <span class="text-slate-subtle font-normal">(optional)</span></label><input class="w-full rounded-xl border border-border-light px-4 py-3 text-sm" id="reg-organization" name="organization" autocomplete="organization" maxlength="100" type="text" placeholder="Your organization"></div>
 
         <!-- Field 2: Work Email -->
         <div>
@@ -264,9 +261,9 @@
             <input class="mt-0.5 w-4 h-4 rounded border-border-light text-signal-blue focus:ring-signal-blue"
               id="reg-terms" required type="checkbox">
             <span>
-              I agree to the Guardian AI <a class="text-signal-blue hover:underline font-semibold" href="#">Terms of
+              I agree to the Guardian AI <a class="text-signal-blue hover:underline font-semibold" href="terms.html" target="_blank" rel="noopener">Terms of
                 Service</a>,
-              <a class="text-signal-blue hover:underline font-semibold" href="#">Enterprise Privacy Policy</a>, and
+              <a class="text-signal-blue hover:underline font-semibold" href="privacy.html" target="_blank" rel="noopener">Enterprise Privacy Policy</a>, and
               telemetry safeguards.
             </span>
           </label>
@@ -276,6 +273,10 @@
           </p>
         </div>
 
+        <div class="pt-3">
+          <div id="captcha-widget" data-action="signup"></div>
+          <p id="captcha-status" role="status" class="text-xs text-slate-subtle mt-2">Loading security verification…</p>
+        </div>
         <!-- Submit Button -->
         <div class="pt-3">
           <button
@@ -439,17 +440,7 @@
       },
 
       validateEmail(rawEmail) {
-        const cleaned = Sanitizer.email(rawEmail);
-        if (!cleaned) {
-          return { valid: false, message: 'Work email is required.' };
-        }
-        if (cleaned.length > 100) {
-          return { valid: false, message: 'Email address cannot exceed 100 characters.' };
-        }
-        if (!this.emailRegex.test(cleaned)) {
-          return { valid: false, message: 'Please enter a valid work email address (e.g., alex@company.com).' };
-        }
-        return { valid: true, sanitized: cleaned };
+        return validateGuardianEmail(rawEmail);
       },
 
       validatePassword(rawPassword) {
@@ -645,8 +636,11 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               fullName: sanitizedUser.fullName,
+              organization: sanitizedUser.organization,
               email: sanitizedUser.email,
-              password: sanitizedUser.password
+              password: sanitizedUser.password,
+              acceptedTerms: document.getElementById('reg-terms').checked,
+              captchaToken: getGuardianCaptchaToken()
             })
           });
 
@@ -691,6 +685,7 @@
       if (!passVal.valid) setFieldError('reg-password', passVal.message); else clearFieldError('reg-password');
       if (!confirmVal.valid) setFieldError('reg-confirm-password', confirmVal.message); else clearFieldError('reg-confirm-password');
 
+      document.getElementById('reg-terms').setAttribute('aria-invalid', String(!termsChecked));
       const termsError = document.getElementById('reg-terms-error');
       if (!termsChecked) {
         if (termsError) termsError.classList.remove('hidden');
@@ -727,6 +722,7 @@
       // Package sanitized registration data
       const sanitizedRegistration = {
         fullName: nameVal.sanitized,
+        organization: document.getElementById('reg-organization').value.trim(),
         email: emailVal.sanitized,
         password: passVal.sanitized,
         // Spreadsheet safe version
@@ -768,7 +764,7 @@
           if (authResult.requiresEmailConfirmation) {
             if (titleEl) titleEl.textContent = 'Confirm Your Email';
             if (descEl) {
-              descEl.innerHTML = 'A verification link has been dispatched to <strong class="text-authority-blue">' + escapeHtml(sanitizedRegistration.email) + '</strong>. Please verify your address to access your security console.';
+              descEl.innerHTML = 'Check for a verification link sent to <strong class="text-authority-blue">' + escapeHtml(sanitizedRegistration.email) + '</strong>. Please verify your address to access your security console. Check spam if it hasn’t arrived. <a href="confirm-email.html" class="underline">Resend confirmation email</a>.';
             }
           } else {
             if (titleEl) titleEl.textContent = 'Enclave Created!';
@@ -783,6 +779,7 @@
           document.getElementById('reg-success-overlay').classList.remove('hidden');
         }, 600);
       } catch (err) {
+        resetGuardianCaptcha();
         isRegisterSubmitting = false;
         console.error('[Guardian AI] Registration pipeline error:', err);
         submitBtn.disabled = false;

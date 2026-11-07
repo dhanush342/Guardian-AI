@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirm your email — Guardian AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script><script src="email-validation.js"></script>
+  <style>*{box-sizing:border-box}body{margin:0;background:#f0f5fc;color:#1a3a5c;font:16px/1.6 Arial,sans-serif}main{max-width:520px;margin:10vh auto;padding:32px;background:white;border:1px solid #dce5ef;border-radius:20px}h1{font:600 36px Georgia,serif}a{color:#2e6db4}label{display:block;margin:20px 0 8px}input,button{font:inherit;padding:12px;border-radius:8px;width:100%}input{border:1px solid #bac9d9}button{margin:16px 0;background:#1a3a5c;color:white;border:0;cursor:pointer}button:disabled{opacity:.5}#status{color:#52677e}[hidden]{display:none!important}@media(max-width:560px){main{margin:32px 16px;padding:24px}}</style>
+</head>
+<body><main>
+  <a href="index.html">Guardian AI</a>
+  <h1 id="heading">Check your inbox</h1>
+  <p id="status" role="status">Open the confirmation email to verify your address. Check spam if it hasn’t arrived. You can request another email below.</p>
+  <form id="resend-form" novalidate>
+    <label for="email">Email address</label><input id="email" type="email" autocomplete="email" required maxlength="100" aria-describedby="status">
+    <button id="resend" type="submit">Resend confirmation email</button>
+  </form>
+  <a href="login.html">Back to sign in</a>
+</main><script>
+  const status = document.getElementById('status');
+  const button = document.getElementById('resend');
+  const email = document.getElementById('email');
+  document.getElementById('resend-form').onsubmit = async event => {
+    event.preventDefault();
+    const validation = validateGuardianEmail(email.value);
+    email.setAttribute('aria-invalid', String(!validation.valid));
+    if (!validation.valid) { status.textContent = validation.message; email.focus(); return; }
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/resend-confirmation', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:validation.sanitized})});
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Unable to request confirmation.');
+      status.textContent = 'If this address has an unconfirmed account, a confirmation email has been requested. Check your inbox and spam folder.';
+      let seconds = 60;
+      button.textContent = `Try again in ${seconds}s`;
+      const timer = setInterval(() => {
+        seconds--; button.textContent = `Try again in ${seconds}s`;
+        if (!seconds) { clearInterval(timer); button.disabled = false; button.textContent = 'Resend confirmation email'; }
+      }, 1000);
+    } catch (error) { status.textContent = error.message; button.disabled = false; }
+  };
+  (async () => {
+    const hash = new URLSearchParams(location.hash.slice(1));
+    const query = new URLSearchParams(location.search);
+    if (hash.has('error') || query.has('error')) {
+      history.replaceState(null, '', location.pathname);
+      document.getElementById('heading').textContent = 'Confirmation link unavailable';
+      status.textContent = 'This link is invalid or has expired. Request a new confirmation email below.';
+      return;
+    }
+    try {
+      const client = await getSupabase();
+      const { data: { session }, error } = await client.auth.getSession();
+      history.replaceState(null, '', location.pathname);
+      if (error) throw error;
+      if (!session) return;
+      const { data: { user }, error: userError } = await client.auth.getUser();
+      if (userError) throw userError;
+      if (!user?.email_confirmed_at) { status.textContent = 'Please confirm your email before continuing.'; return; }
+      document.getElementById('heading').textContent = 'Email confirmed';
+      status.textContent = 'Your email is verified. Opening your profile…';
+      document.getElementById('resend-form').hidden = true;
+      location.replace('profile.html');
+    } catch (error) { status.textContent = error.message || 'Unable to verify this link. Please request another email.'; }
+  })();
+</script></body></html>

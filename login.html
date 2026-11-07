@@ -23,6 +23,8 @@
     rel="stylesheet">
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="email-validation.js"></script>
+  <script src="auth.js"></script>
 
   <style>
     @layer base {
@@ -75,6 +77,7 @@
       }
     };
   </script>
+  <script src="captcha.js" defer></script>
 </head>
 
 <body
@@ -112,25 +115,11 @@
     <div
       class="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl border border-border-light shadow-2xl shadow-signal-blue/10 p-6 sm:p-10 relative z-10">
 
-      <!-- Card Badge -->
-      <div class="flex items-center justify-between mb-4">
-        <div
-          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-border-light text-xs font-mono text-authority-blue font-semibold uppercase tracking-wider">
-          <span class="w-2 h-2 rounded-full bg-signal-blue animate-pulse"></span>
-          Enterprise Identity Authentication
-        </div>
-        <span class="font-mono text-xs text-slate-subtle">AUTH PROTOCOL</span>
-      </div>
-
       <!-- Card Title & Subtitle -->
       <h1 class="font-serif text-3xl sm:text-4xl font-bold text-near-black tracking-tight leading-tight mb-2">
         Welcome Back to <span class="hero-gradient-text">Guardian AI</span>
       </h1>
-      <p class="font-sans text-sm text-slate-subtle leading-relaxed mb-6">
-        Authenticate your credentials to access the runtime threat matrix and mission-critical safety policies.
-      </p>
-
-      <!-- Global Alert Banner -->
+<!-- Global Alert Banner -->
       <div
         class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 mb-5"
         id="login-global-alert">
@@ -139,6 +128,7 @@
       </div>
 
       <!-- Login Form -->
+      <p id="confirmation-help" hidden class="text-sm text-signal-blue mb-4">Email not confirmed. <a class="underline" href="confirm-email.html">Resend your confirmation email</a>.</p>
       <form class="space-y-4" id="login-form" novalidate onsubmit="handleLoginSubmit(event)">
 
         <!-- Field 1: Work Email -->
@@ -200,6 +190,10 @@
           </label>
         </div>
 
+        <div class="pt-3">
+          <div id="captcha-widget" data-action="signin"></div>
+          <p id="captcha-status" role="status" class="text-xs text-slate-subtle mt-2">Loading security verification…</p>
+        </div>
         <!-- Submit Button -->
         <div class="pt-3">
           <button
@@ -354,17 +348,7 @@
       emailRegex: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/,
 
       validateEmail(rawEmail) {
-        const cleaned = Sanitizer.email(rawEmail);
-        if (!cleaned) {
-          return { valid: false, message: 'Work email is required.' };
-        }
-        if (cleaned.length > 100) {
-          return { valid: false, message: 'Email cannot exceed 100 characters.' };
-        }
-        if (!this.emailRegex.test(cleaned)) {
-          return { valid: false, message: 'Please enter a valid work email address.' };
-        }
-        return { valid: true, sanitized: cleaned };
+        return validateGuardianEmail(rawEmail);
       },
 
       validatePassword(rawPassword) {
@@ -442,7 +426,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               email: sanitizedCredentials.email,
-              password: sanitizedCredentials.password
+              password: sanitizedCredentials.password,
+              captchaToken: getGuardianCaptchaToken()
             })
           });
 
@@ -450,14 +435,22 @@
           // Authentication response processed
 
           if (!response.ok) {
+            if (result.code === 'email_not_confirmed') {
+              document.getElementById('confirmation-help').hidden = false;
+            }
             throw new Error(result.error || 'Authentication failed.');
           }
 
-          if (result.session && result.session.accessToken) {
-            // Save token for session restore across pages
-            localStorage.setItem('guardian_access_token', result.session.accessToken);
-            localStorage.setItem('guardian_user', JSON.stringify(result.user));
+          if (!result.session?.accessToken || !result.session?.refreshToken) {
+            throw new Error('No session was returned. Please sign in again.');
           }
+          const client = await getSupabase();
+          const { error } = await client.auth.setSession({
+            access_token: result.session.accessToken,
+            refresh_token: result.session.refreshToken
+          });
+          if (error) throw error;
+          clearLegacyAuth();
 
           return result;
         } catch (err) {
@@ -537,10 +530,11 @@
           submitText.textContent = 'Sign In to Platform';
           document.getElementById('login-success-overlay').classList.remove('hidden');
           setTimeout(() => {
-            window.location.href = 'index.html';
+            window.location.replace('profile.html');
           }, 1800);
         }, 600);
       } catch (err) {
+        resetGuardianCaptcha();
         isLoginSubmitting = false;
         console.error('[Guardian AI] Authentication error:', err);
         submitBtn.disabled = false;

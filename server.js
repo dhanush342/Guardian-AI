@@ -3,13 +3,17 @@
 require('dotenv').config();
 const express  = require('express');
 const path     = require('path');
+const validateEmail = require('./email-validation');
+const verifyCaptcha = require('./captcha-server');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
+const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
+const confirmationRedirect = new URL('/confirm-email.html', APP_URL).href;
 
 // ─── Environment Variables ─────────────────────────────────────────────────
 const SUPABASE_URL             = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY        = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_ANON_KEY        = process.env.SUPABASE_ANON_KEY;
 const SUPABASE_SERVICE_KEY     = process.env.SUPABASE_SERVICE_KEY;
 const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL;
 
@@ -21,7 +25,8 @@ app.use(express.static(path.join(__dirname)));
 app.get('/api/config', (req, res) => {
   res.json({
     supabaseUrl: SUPABASE_URL || '',
-    supabaseAnonKey: SUPABASE_ANON_KEY || ''
+    supabaseAnonKey: SUPABASE_ANON_KEY || '',
+    turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || ''
   });
 });
 
@@ -263,26 +268,35 @@ async function forwardToGoogleSheet(payload) {
 // ─── POST /api/register ────────────────────────────────────────────────────
 app.post('/api/register', rateLimiter, async (req, res) => {
   try {
-    const { fullName, email, password } = req.body || {};
+    const { fullName, email, password, organization } = req.body || {};
+    if (organization !== undefined && (typeof organization !== 'string' || organization.trim().length > 100)) return res.status(400).json({ success: false, error: 'Organization must be at most 100 characters.' });
 
     const cleanName  = cleanString(fullName, 70);
-    const cleanEmail = cleanString(email, 100).toLowerCase();
+    const emailValidation = validateEmail(email);
+    const cleanEmail = emailValidation.sanitized;
 
     if (!cleanName || cleanName.length < 2 || !NAME_REGEX.test(cleanName)) {
       return res.status(400).json({ success: false, error: 'Full name must be 2–70 characters (letters only).' });
     }
-    if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
+    if (!emailValidation.valid) {
       return res.status(400).json({ success: false, error: 'Please provide a valid work email.' });
     }
-    if (!password || password.length < 8) {
-      return res.status(400).json({ success: false, error: 'Password must be at least 8 characters long.' });
+    if (typeof password !== 'string' || password.length < 8 || password.length > 128 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+      return res.status(400).json({ success: false, error: 'Password must be 8–128 characters and include uppercase, lowercase, a number, and a special character.' });
     }
 
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
       return res.status(500).json({ success: false, error: 'Supabase is not configured on the server.' });
     }
 
-    const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/signup`;
+    if (req.body?.acceptedTerms !== true) return res.status(400).json({ success: false, error: 'Please accept the Terms of Service and Privacy Policy.' });
+    const captchaError = await verifyCaptcha(req.body?.captchaToken, 'signup', {
+      secret: process.env.TURNSTILE_SECRET_KEY, siteKey: process.env.TURNSTILE_SITE_KEY,
+      appUrl: APP_URL
+    });
+    if (captchaError) return res.status(captchaError.status).json({ success: false, error: captchaError.error });
+
+    const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/signup?redirect_to=${encodeURIComponent(confirmationRedirect)}`;
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -293,7 +307,8 @@ app.post('/api/register', rateLimiter, async (req, res) => {
         email: cleanEmail,
         password: password,
         data: {
-          full_name: cleanName
+          full_name: cleanName,
+          organization: cleanString(organization, 100)
         }
       })
     });
@@ -310,14 +325,15 @@ app.post('/api/register', rateLimiter, async (req, res) => {
       return res.status(response.status).json({ success: false, error: friendlyError });
     }
 
-    const requiresEmailConfirmation = !result.session && !!result.id;
+    const registeredUser = result.user || result;
+    const requiresEmailConfirmation = !registeredUser.email_confirmed_at;
 
     return res.status(200).json({
       success: true,
       requiresEmailConfirmation,
       user: {
-        id: result.id,
-        email: result.email,
+        id: registeredUser.id,
+        email: registeredUser.email,
         fullName: cleanName
       }
     });
@@ -328,19 +344,50 @@ app.post('/api/register', rateLimiter, async (req, res) => {
   }
 });
 
+// Resending is generic to avoid disclosing which addresses have accounts.
+app.post('/api/resend-confirmation', rateLimiter, async (req, res) => {
+  const validation = validateEmail(req.body?.email);
+  if (!validation.valid) return res.status(400).json({ success: false, error: validation.message });
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return res.status(503).json({ success: false, error: 'Email confirmation is unavailable.' });
+  try {
+    const response = await fetch(`${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/resend?redirect_to=${encodeURIComponent(confirmationRedirect)}`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'signup', email: validation.sanitized })
+    });
+    if (!response.ok) {
+      return res.status(response.status === 429 ? 429 : 502).json({ success: false, error: response.status === 429 ? 'Please wait before requesting another confirmation email.' : 'Unable to send confirmation email. Please try again later.' });
+    }
+    return res.json({ success: true });
+  } catch (error) {
+    return res.status(502).json({ success: false, error: 'Email confirmation is unavailable. Please try again later.' });
+  }
+});
+
 // ─── POST /api/login ───────────────────────────────────────────────────────
 app.post('/api/login', rateLimiter, async (req, res) => {
   try {
     const { email, password } = req.body || {};
 
-    const cleanEmail = cleanString(email, 100).toLowerCase();
+    const emailValidation = validateEmail(email);
+    const cleanEmail = emailValidation.sanitized;
 
-    if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
+    if (!emailValidation.valid) {
       return res.status(400).json({ success: false, error: 'Please enter a valid work email.' });
     }
-    if (!password) {
+    if (typeof password !== 'string' || !password) {
       return res.status(400).json({ success: false, error: 'Password is required.' });
     }
+
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      return res.status(500).json({ success: false, error: 'Supabase is not configured on the server.' });
+    }
+
+    const captchaError = await verifyCaptcha(req.body?.captchaToken, 'signin', {
+      secret: process.env.TURNSTILE_SECRET_KEY, siteKey: process.env.TURNSTILE_SITE_KEY,
+      appUrl: APP_URL
+    });
+    if (captchaError) return res.status(captchaError.status).json({ success: false, error: captchaError.error });
 
     const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/auth/v1/token?grant_type=password`;
     const response = await fetch(endpoint, {
@@ -364,9 +411,14 @@ app.post('/api/login', rateLimiter, async (req, res) => {
       } else if (msg.includes('Email not confirmed')) {
         msg = 'Your email address has not been confirmed yet. Please verify your inbox.';
       }
-      return res.status(response.status).json({ success: false, error: msg });
+      return res.status(response.status).json({ success: false, error: msg, code: result.error_code || result.code });
     }
 
+    if (!result.user?.email_confirmed_at) {
+      return res.status(403).json({ success: false, code: 'email_not_confirmed', error: 'Please confirm your email before signing in.' });
+    }
+
+    res.set('Cache-Control', 'no-store');
     return res.status(200).json({
       success: true,
       session: {
@@ -382,6 +434,8 @@ app.post('/api/login', rateLimiter, async (req, res) => {
     return res.status(500).json({ success: false, error: 'Internal server error.' });
   }
 });
+
+require('./profile-routes')(app, { url: SUPABASE_URL?.replace(/\/+$/, ''), key: SUPABASE_ANON_KEY, rateLimiter });
 
 // ─── SPA fallback: catch-all → index.html ─────────────────────────────────
 app.get('/{*splat}', (req, res) => {
