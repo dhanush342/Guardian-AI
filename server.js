@@ -442,7 +442,44 @@ app.use('/api', (req, res) => {
   res.status(404).json({ success: false, error: `API endpoint ${req.method} ${req.originalUrl} not found` });
 });
 
-app.get('/{*splat}', (req, res) => {
+// Explicit routes for top-level HTML pages (supports both clean URLs and .html extensions)
+const pageRoutes = {
+  '/login': 'login.html',
+  '/register': 'register.html',
+  '/about': 'about.html',
+  '/careers': 'careers.html',
+  '/partners': 'partners.html',
+  '/privacy': 'privacy.html',
+  '/terms': 'terms.html',
+  '/security': 'security.html',
+  '/cookies': 'cookies.html',
+  '/profile': 'profile.html',
+  '/confirm-email': 'confirm-email.html',
+  '/demo': 'demo.html',
+  '/analysis': 'analysis.html'
+};
+
+Object.entries(pageRoutes).forEach(([route, file]) => {
+  const handler = (req, res) => {
+    const filePath = path.join(__dirname, file);
+    if (fs.existsSync(filePath)) {
+      return res.sendFile(filePath);
+    }
+    res.sendFile(path.join(__dirname, 'index.html'));
+  };
+  app.get(route, handler);
+  app.get(route + '.html', handler);
+});
+
+// For assets that have extensions (.png, .jpg, .jpeg, .svg, .css, .js, .ico), do not return index.html
+app.get('*', (req, res) => {
+  const requestedPath = path.join(__dirname, req.path);
+  if (fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
+    return res.sendFile(requestedPath);
+  }
+  if (path.extname(req.path)) {
+    return res.status(404).send('Not Found');
+  }
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
